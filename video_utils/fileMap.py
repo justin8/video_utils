@@ -18,7 +18,7 @@ def _pruneMissingFromFileMap(fileMap):
     cprint("blue", "Checking for missing/deleted files...")
     tempMap = deepcopy(fileMap)
     collection = tempMap
-    if log.level <= logging.INFO:
+    if log.level > logging.INFO:
         collection = tqdm(tempMap)
     for dirPath in collection:
         if not os.path.exists(dirPath):
@@ -53,6 +53,7 @@ def _getVideoMetadata(videoPath):
         if track.track_type == "Video":
             outputMetadata["quality"] = getTrackQuality(track)
             outputMetadata["format"] = track.format
+            break
     return outputMetadata
 
 
@@ -64,7 +65,7 @@ def _updateFileMap(directory, fileMap):
         videos = getVideosInFileList(fileNames)
         log.info("Total videos in %s: %s" % (dirPath, len(videos)))
 
-        if log.level <= logging.INFO:
+        if log.level > logging.INFO:
             videos = tqdm(videos)
         changes = False
         for video in videos:
