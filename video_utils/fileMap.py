@@ -10,9 +10,10 @@ from pymediainfo import MediaInfo
 from tqdm import tqdm
 
 from .cprint import cprint
-from .misc import getVideosInFileList, getTrackQuality
+from .misc import getVideosInFileList, getTrackQuality, getCodecFromFormat
 
 log = logging.getLogger()
+
 
 def _pruneMissingFromFileMap(fileMap):
     cprint("blue", "Checking for missing/deleted files...")
@@ -32,6 +33,7 @@ def _pruneMissingFromFileMap(fileMap):
                 log.info("Removing %s from cache" % videoPath)
                 del fileMap[dirPath][video]
     return fileMap
+
 
 def _videoInCache(video, dirPath, fileMap):
     if video in fileMap[dirPath]:
@@ -53,9 +55,10 @@ def _getVideoMetadata(videoPath):
         if track.track_type == "Video":
             outputMetadata["quality"] = getTrackQuality(track)
             outputMetadata["format"] = track.format
+            outputMetadata["codec"] = getCodecFromFormat(track.format)
             break
     if "format" not in outputMetadata:
-        log.error("Failed to parse track metadata from %s." videoPath)
+        log.error("Failed to parse track metadata from %s." % videoPath)
         raise Exception("Failed to parse track metadata")
     return outputMetadata
 
