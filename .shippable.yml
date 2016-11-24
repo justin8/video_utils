@@ -9,5 +9,5 @@ build:
         - mkdir -p shippable/codecoverage
         - pip install --upgrade -e .
         - coverage run ./setup.py test
-        - coverage xml --include 'convert_videos*' -o shippable/codecoverage/coverage.xml
+        - coverage xml --include 'video_utils*' -o shippable/codecoverage/coverage.xml
         - nosetests --with-xunit --xunit-file=shippable/testresults/nosetests.xml
