@@ -54,6 +54,9 @@ def _getVideoMetadata(videoPath):
             outputMetadata["quality"] = getTrackQuality(track)
             outputMetadata["format"] = track.format
             break
+    if "format" not in outputMetadata:
+        log.error("Failed to parse track metadata from %s." videoPath)
+        raise Exception("Failed to parse track metadata")
     return outputMetadata
 
 
