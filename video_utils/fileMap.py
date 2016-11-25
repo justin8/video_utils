@@ -121,7 +121,6 @@ def _loadCachedFileMap(directory):
 
 
 def getFileMap(directory, update=True, useCache=True):
-    fileMap = {}
     directory = os.path.realpath(directory)
 
     if not useCache and not update:
