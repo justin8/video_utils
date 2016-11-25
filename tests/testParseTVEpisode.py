@@ -1,6 +1,6 @@
 import unittest
 
-import video_utils
+from video_utils.parseTVEpisode import parseTVEpisode
 
 class testParseTVEpisode(unittest.TestCase):
 
@@ -24,7 +24,7 @@ class testParseTVEpisode(unittest.TestCase):
             }
 
         for filename in filenames:
-            result = video_utils.parseTVEpisode(filename)
+            result = parseTVEpisode(filename)
             self.assertEqual(result['season'], expectedResult['season'])
             self.assertEqual(result['episode'], expectedResult['episode'])
             self.assertEqual(result['showName'], expectedResult['showName'])
@@ -49,7 +49,7 @@ class testParseTVEpisode(unittest.TestCase):
             }
 
         for filename in filenames:
-            result = video_utils.parseTVEpisode(filename)
+            result = parseTVEpisode(filename)
             self.assertEqual(result['season'], expectedResult['season'])
             self.assertEqual(result['episode'], expectedResult['episode'])
             self.assertEqual(result['showName'], expectedResult['showName'])
@@ -74,8 +74,15 @@ class testParseTVEpisode(unittest.TestCase):
             }
 
         for filename in filenames:
-            result = video_utils.parseTVEpisode(filename)
+            result = parseTVEpisode(filename)
             self.assertEqual(result['season'], expectedResult['season'])
             self.assertEqual(result['episode'], expectedResult['episode'])
             self.assertEqual(result['showName'], expectedResult['showName'])
             self.assertEqual(result['episodeName'], expectedResult['episodeName'])
+
+
+    def test_badFilename(self):
+        testFilename = "Star Trek (2009).mkv"
+        expectedResult = {'showName': None, 'episode': None, 'episodeName': None, 'season': None}
+
+        self.assertEqual(parseTVEpisode(testFilename), expectedResult)

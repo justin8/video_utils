@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="video_utils",
-    version="0.1.2",
+    version="0.1.3",
     author="Justin Dray",
     author_email="justin@dray.be",
     url="https://github.com/justin8/tv_report",
