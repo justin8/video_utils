@@ -4,3 +4,4 @@ from .misc import getCodecFromFormat
 from .misc import isVideo
 from .misc import getTrackQuality
 from .misc import listParsableCodecs
+from .misc import getPrettyCodecFromFFMPEGCodec

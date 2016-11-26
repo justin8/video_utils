@@ -10,6 +10,13 @@ def getCodecFromFormat(formatString, codecType="ffmpeg"):
     except:
         return "Other"
 
+
+def getPrettyCodecFromFFMPEGCodec(codec):
+    for validCodec in validCodecs.values():
+        if validCodec['ffmpeg'] == codec:
+            return validCodec['pretty']
+    raise Exception("Unable to parse codec")
+
 def listParsableCodecs(codecType="ffmpeg"):
     output = []
     for codec in validCodecs.values():
