@@ -51,3 +51,9 @@ class testMisc(unittest.TestCase):
 
         for filename in nonVideoFilenames:
             self.assertFalse(misc.isVideo(filename))
+
+
+    def testIsCodecParsable(self):
+        self.assertFalse(misc.isCodecParsable("foo"))
+        self.assertTrue(misc.isCodecParsable("libx265"))
+        self.assertTrue(misc.isCodecParsable("h264"))
