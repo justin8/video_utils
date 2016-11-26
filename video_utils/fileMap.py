@@ -123,6 +123,7 @@ def _loadCachedFileMap(directory):
 def getFileMap(directory, update=True, useCache=True):
     directory = os.path.realpath(directory)
 
+    fileMap = {}
     if not useCache and not update:
         raise Exception("At least one of update or useCache must be True")
 
