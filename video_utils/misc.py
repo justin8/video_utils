@@ -24,12 +24,6 @@ def isFormatStringParsable(formatString):
     raise Exception("Unsupported format string requested")
 
 
-def validateTargetVideoCodec(codec):
-    if codec not in validCodecs.values():
-        return False
-    return True
-
-
 def isVideo(f):
     videoExtensions = ("avi", "divx", "mkv", "mp4", "mpg", "mpeg", "mov", "m4v", "flv", "ts", "wmv")
     return f.lower().endswith(videoExtensions)
