@@ -10,12 +10,11 @@ def getCodecFromFormat(formatString, codecType="ffmpeg"):
     except:
         return "Other"
 
-
-def isCodecParsable(codec, codecType="ffmpeg"):
-    for validCodec in validCodecs.values():
-        if validCodec[codecType] == codec:
-            return True
-    return False
+def listParsableCodecs(codecType="ffmpeg"):
+    output = []
+    for codec in validCodecs.values():
+        output.append(codec[codecType])
+    return output
 
 
 def isFormatStringParsable(formatString):
