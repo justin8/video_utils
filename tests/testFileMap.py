@@ -19,10 +19,10 @@ foo = {
             'format': 'HEVC',
             'quality': '1080p',
             'size': 2305},
-        'test episode - 02x01 - this is 1080p.mkv': {'codec': 'x265',
-            'format': 'HEVC',
+        'test episode - 02x01 - this is 1080p.avi': {'codec': 'Other',
+            'format': 'MPEG-4 Visual',
             'quality': '1080p',
-            'size': 2305},
+            'size': 10652},
         'test episode - 02x02 - another in 1080p.mkv': {'codec': 'x265',
             'format': 'HEVC',
             'quality': '1080p',
@@ -67,6 +67,7 @@ class testMisc(unittest.TestCase):
 
 
     def testGetFileMap(self):
+        self.maxDiff = None
         expectedResult = None
         for path in self.testDataMap.keys():
             if path.endswith('foo'):

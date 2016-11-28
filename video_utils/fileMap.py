@@ -60,7 +60,7 @@ def _getVideoMetadata(videoPath):
             break
     if "format" not in outputMetadata:
         log.error("Failed to parse track metadata from %s." % videoPath)
-        raise Exception("Failed to parse track metadata")
+        raise Exception("Failed to parse track metadata from %s" % videoPath)
     return outputMetadata
 
 
