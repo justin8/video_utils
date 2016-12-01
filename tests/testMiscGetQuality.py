@@ -37,7 +37,7 @@ class testGetTrackQuality(unittest.TestCase):
 
 
     def testGetTrackQualityWidthOther(self):
-        testData = [ 1100, 2000 ]
+        testData = [ 1100, 2500 ]
 
         for width in testData:
             track = lambda: None
