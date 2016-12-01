@@ -44,14 +44,18 @@ def getVideosInFileList(fileList):
     return videos
 
 
+def _isSimilarTo(value, target):
+    return target * 0.9 <= value <= target * 1.1
+
+
 def getTrackQuality(track):
-    if track.width >= 1800 and track.width <= 1940:
+    if _isSimilarTo(track.width, 1920):
         return "1080p"
-    if track.height >= 1000 and track.height <= 1100:
+    if _isSimilarTo(track.height, 1080):
         return "1080p"
-    if track.width >= 1200 and track.width <= 1300:
+    if _isSimilarTo(track.width, 1280):
         return "720p"
-    if track.height >= 650 and track.height <= 730:
+    if _isSimilarTo(track.height, 720):
         return "720p"
     if track.width < 1000:
         return "SD"
