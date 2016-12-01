@@ -45,7 +45,7 @@ def getVideosInFileList(fileList):
 
 
 def getTrackQuality(track):
-    if track.width >= 1900 and track.width <= 1940:
+    if track.width >= 1800 and track.width <= 1940:
         return "1080p"
     if track.height >= 1000 and track.height <= 1100:
         return "1080p"
