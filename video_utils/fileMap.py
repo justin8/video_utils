@@ -41,6 +41,9 @@ def _videoInCache(video, dirPath, fileMap):
             log.debug("Found %s in cache..." % video)
             videoPath = os.path.join(dirPath, video)
             videoSize = os.stat(videoPath).st_size
+            if fileMap[dirPath][video]["quality"] == "Other":
+                log.info("Quality is 'Other'. Invalidating cache")
+                return False
             if fileMap[dirPath][video]["size"] == videoSize:
                 log.info("Using cache for %s" % video)
                 return True
