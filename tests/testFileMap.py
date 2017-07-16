@@ -77,6 +77,20 @@ class testMisc(unittest.TestCase):
             self.assertEqual(self.testDataMap[path], expectedResult)
 
 
+    def testGetFileMapSingleFile(self):
+        expectedResult = {'test episode - 02x03 - this is 720p.mkv':
+                             {'codec': 'x265',
+                              'format': 'HEVC',
+                              'quality': '720p',
+                              'size': 2303
+                             }
+                         }
+        videoPath = os.path.join(testDataDir, 'foo/test episode - 02x03 - this is 720p.mkv')
+        rawResult = fileMap.getFileMap(videoPath, useCache=False)
+        result = next(iter(rawResult.values()))
+        self.assertEqual(result, expectedResult)
+
+
     def testGetFileMapCache(self):
         cachedResult = fileMap.getFileMap(testDataDir, useCache=True)
         self.assertDictEqual(self.testDataMap, cachedResult)

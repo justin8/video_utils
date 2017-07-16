@@ -69,7 +69,13 @@ def _getVideoMetadata(videoPath):
 
 def _updateFileMap(directory, fileMap):
     fileMap = _pruneMissingFromFileMap(fileMap)
-    for dirPath, dirNames, fileNames in os.walk(directory, followlinks=True):
+    if os.path.isfile(directory):
+        log.info("Provided directory is a file, not a directory")
+        fileTree = [(os.path.dirname(directory), [], [os.path.basename(directory)])]
+    else:
+        fileTree = os.walk(directory, followlinks=True)
+
+    for dirPath, dirNames, fileNames in fileTree:
         cprint("green", "Working in directory: %s" % dirPath)
 
         videos = getVideosInFileList(fileNames)
@@ -81,13 +87,11 @@ def _updateFileMap(directory, fileMap):
         for video in videos:
             if dirPath not in fileMap:  # Only create if there are videos for this path
                 fileMap[dirPath] = {}
-            if _videoInCache(video, dirPath, fileMap):
-                continue
-
-            changes = True
-            log.info("Parsing %s" % video)
-            videoPath = os.path.join(dirPath, video)
-            fileMap[dirPath][video] = _getVideoMetadata(videoPath)
+            if not _videoInCache(video, dirPath, fileMap):
+                changes = True
+                log.info("Parsing %s" % video)
+                videoPath = os.path.join(dirPath, video)
+                fileMap[dirPath][video] = _getVideoMetadata(videoPath)
 
         if changes:
             _saveCachedFileMap(directory, fileMap)
