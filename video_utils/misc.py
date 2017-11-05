@@ -45,6 +45,8 @@ def getVideosInFileList(fileList):
 
 
 def _isSimilarTo(value, target):
+    value = float(value)
+    target = float(target)
     return target * 0.9 <= value <= target * 1.1
 
 
