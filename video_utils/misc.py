@@ -1,7 +1,7 @@
 validCodecs = {
-        "HEVC": { "ffmpeg": "libx265", "pretty": "x265"},
-        "AVC": { "ffmpeg": "h264", "pretty": "x264"}
-    }
+    "HEVC": {"ffmpeg": "libx265", "pretty": "x265"},
+    "AVC": {"ffmpeg": "h264", "pretty": "x264"}
+}
 
 
 def getCodecFromFormat(formatString, codecType="ffmpeg"):
@@ -17,6 +17,7 @@ def getPrettyCodecFromFFMPEGCodec(codec):
             return validCodec['pretty']
     raise Exception("Unable to parse codec")
 
+
 def listParsableCodecs(codecType="ffmpeg"):
     output = []
     for codec in validCodecs.values():
@@ -31,7 +32,8 @@ def isFormatStringParsable(formatString):
 
 
 def isVideo(f):
-    videoExtensions = ("avi", "divx", "mkv", "mp4", "mpg", "mpeg", "mov", "m4v", "flv", "ts", "wmv")
+    videoExtensions = ("avi", "divx", "mkv", "mp4", "mpg",
+                       "mpeg", "mov", "m4v", "flv", "ts", "wmv")
     return f.lower().endswith(videoExtensions)
 
 

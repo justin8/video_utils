@@ -59,7 +59,8 @@ def _getVideoMetadata(videoPath):
         if track.track_type == "Video":
             outputMetadata["quality"] = getTrackQuality(track)
             outputMetadata["format"] = track.format
-            outputMetadata["codec"] = getCodecFromFormat(track.format, codecType="pretty")
+            outputMetadata["codec"] = getCodecFromFormat(
+                track.format, codecType="pretty")
             break
     if "format" not in outputMetadata:
         log.error("Failed to parse track metadata from %s." % videoPath)
@@ -71,7 +72,8 @@ def _updateFileMap(directory, fileMap):
     fileMap = _pruneMissingFromFileMap(fileMap)
     if os.path.isfile(directory):
         log.info("Provided directory is a file, not a directory")
-        fileTree = [(os.path.dirname(directory), [], [os.path.basename(directory)])]
+        fileTree = [(os.path.dirname(directory), [],
+                     [os.path.basename(directory)])]
     else:
         fileTree = os.walk(directory, followlinks=True)
 
