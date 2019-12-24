@@ -8,21 +8,21 @@ from video_utils import Video, Codec
 
 
 def test_minimal():
-    v = Video("foo.mkv", "/tmp/bar")
+    v = Video("foo.mkv", "/not-a-real-path/bar")
     assert v.name == "foo.mkv"
-    assert v.dir_path == "/tmp/bar"
+    assert v.dir_path == "/not-a-real-path/bar"
 
 
 def test_full_path():
-    v = Video("foo.mkv", "/tmp/bar")
-    assert v.full_path == "/tmp/bar/foo.mkv"
+    v = Video("foo.mkv", "/not-a-real-path/bar")
+    assert v.full_path == "/not-a-real-path/bar/foo.mkv"
 
 
 def test_equality():
-    instance = Video("foo.mkv", "/tmp/bar")
-    duplicate = Video("foo.mkv", "/tmp/bar")
-    different_video = Video("bar.mkv", "/tmp/bar")
-    different_path = Video("foo.mkv", "/tmp/baz")
+    instance = Video("foo.mkv", "/not-a-real-path/bar")
+    duplicate = Video("foo.mkv", "/not-a-real-path/bar")
+    different_video = Video("bar.mkv", "/not-a-real-path/bar")
+    different_path = Video("foo.mkv", "/not-a-real-path/baz")
     not_a_video = "I'm not a video!"
 
     assert instance == duplicate
@@ -95,7 +95,7 @@ def test_refresh(mock_validator, mock_stat, mock_media_info):
     mock_media_info.parse.return_value = metadata_return()
     mock_validator().quality_similar_to.return_value = "1080p"
 
-    v = Video("foo.mkv", "/tmp/bar")
+    v = Video("foo.mkv", "/not-a-real-path/bar")
     v.refresh()
 
     assert v.codec == expected_codec
@@ -114,6 +114,6 @@ def test_refresh_failure(mock_validator, mock_stat, mock_media_info):
     mock_media_info.parse.return_value = metadata
     mock_validator().quality_similar_to.return_value = "1080p"
 
-    v = Video("foo.mkv", "/tmp/bar")
+    v = Video("foo.mkv", "/not-a-real-path/bar")
     with pytest.raises(RuntimeError):
         v.refresh()
