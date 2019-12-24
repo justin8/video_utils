@@ -1,7 +1,6 @@
-from .parseTVEpisode import parseTVEpisode
-from .fileMap import getFileMap
-from .misc import getCodecFromFormat
-from .misc import isVideo
-from .misc import getTrackQuality
-from .misc import listParsableCodecs
-from .misc import getPrettyCodecFromFFMPEGCodec
+
+from .parse_episode import parse_episode
+from .fileMap import FileMap
+from . import validators
+from .codec import Codec
+from .video import Video

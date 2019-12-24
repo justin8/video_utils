@@ -1,4 +1,4 @@
-from video_utils.parseTVEpisode import parseTVEpisode
+from video_utils.parse_episode import parse_episode
 
 
 def test_sXXeXX():
@@ -21,7 +21,7 @@ def test_sXXeXX():
     }
 
     for filename in filenames:
-        result = parseTVEpisode(filename)
+        result = parse_episode(filename)
         assert result['season'] == expectedResult['season']
         assert result['episode'] == expectedResult['episode']
         assert result['showName'] == expectedResult['showName']
@@ -46,7 +46,7 @@ def test_SSxEE():
     }
 
     for filename in filenames:
-        result = parseTVEpisode(filename)
+        result = parse_episode(filename)
         assert result['season'] == expectedResult['season']
         assert result['episode'] == expectedResult['episode']
         assert result['showName'] == expectedResult['showName']
@@ -71,7 +71,7 @@ def test_squareBrackets():
     }
 
     for filename in filenames:
-        result = parseTVEpisode(filename)
+        result = parse_episode(filename)
         assert result['season'] == expectedResult['season']
         assert result['episode'] == expectedResult['episode']
         assert result['showName'] == expectedResult['showName']
@@ -83,4 +83,4 @@ def test_badFilename():
     expectedResult = {'showName': None, 'episode': None,
                       'episodeName': None, 'season': None}
 
-    assert parseTVEpisode(testFilename) == expectedResult
+    assert parse_episode(testFilename) == expectedResult

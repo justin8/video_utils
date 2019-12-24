@@ -3,143 +3,151 @@
 from copy import deepcopy
 import logging
 import os
+from os import path
 import hashlib
 import pickle
+from functools import cached_property
 
-from pymediainfo import MediaInfo
 from tqdm import tqdm
 
 from .cprint import cprint
-from .misc import getVideosInFileList, getTrackQuality, getCodecFromFormat
+from .validators import Filter
+from .video import Video
 
-log = logging.getLogger()
-
-
-def _pruneMissingFromFileMap(fileMap):
-    cprint("blue", "Checking for missing/deleted files...")
-    tempMap = deepcopy(fileMap)
-    collection = tempMap
-    if log.level > logging.INFO:
-        collection = tqdm(tempMap)
-    for dirPath in collection:
-        if not os.path.exists(dirPath):
-            log.info("Removing %s from cache" % dirPath)
-            del fileMap[dirPath]
-            continue
-
-        for video in tempMap[dirPath]:
-            videoPath = os.path.join(dirPath, video)
-            if not os.path.exists(videoPath):
-                log.info("Removing %s from cache" % videoPath)
-                del fileMap[dirPath][video]
-    return fileMap
+log = logging.getLogger(__name__)
 
 
-def _videoInCache(video, dirPath, fileMap):
-    if dirPath in fileMap:
-        if video in fileMap[dirPath]:
-            log.debug("Found %s in cache..." % video)
-            videoPath = os.path.join(dirPath, video)
-            videoSize = os.stat(videoPath).st_size
-            if fileMap[dirPath][video]["quality"] == "Other":
-                log.info("Quality is 'Other'. Invalidating cache")
-                return False
-            if fileMap[dirPath][video]["size"] == videoSize:
-                log.info("Using cache for %s" % video)
-                return True
-            log.debug("Filesize differs. Invalidating cache")
-    return False
+class FileMap:
+    def __init__(self, directory, update=True, use_cache=True):
+        """
+        update and use_cache values are only honoured on object initialization
+        """
+        self.directory = directory
+        self._update = update
+        self._use_cache = use_cache
+        self.contents = {}
+        self._validate_settings(update=self.update, use_cache=self.use_cache)
 
+    @property
+    def directory(self):
+        return self._directory
 
-def _getVideoMetadata(videoPath):
-    rawMetadata = MediaInfo.parse(videoPath)
-    outputMetadata = {}
-    outputMetadata["size"] = os.stat(videoPath).st_size
-    for track in rawMetadata.tracks:
-        if track.track_type == "Video":
-            outputMetadata["quality"] = getTrackQuality(track)
-            outputMetadata["format"] = track.format
-            outputMetadata["codec"] = getCodecFromFormat(
-                track.format, codecType="pretty")
-            break
-    if "format" not in outputMetadata:
-        log.error("Failed to parse track metadata from %s." % videoPath)
-        raise Exception("Failed to parse track metadata from %s" % videoPath)
-    return outputMetadata
+    @directory.setter
+    def directory(self, value):
+        self._directory = path.realpath(value)
 
+    @property
+    def update(self):
+        return self._update
 
-def _updateFileMap(directory, fileMap):
-    fileMap = _pruneMissingFromFileMap(fileMap)
-    if os.path.isfile(directory):
-        log.info("Provided directory is a file, not a directory")
-        fileTree = [(os.path.dirname(directory), [],
-                     [os.path.basename(directory)])]
-    else:
-        fileTree = os.walk(directory, followlinks=True)
+    @update.setter
+    def update(self, value):
+        self._validate_settings(update=value, use_cache=self.use_cache)
+        self._update = value
 
-    for dirPath, dirNames, fileNames in fileTree:
-        cprint("green", "Working in directory: %s" % dirPath)
+    @property
+    def use_cache(self):
+        return self._use_cache
 
-        videos = getVideosInFileList(fileNames)
-        log.info("Total videos in %s: %s" % (dirPath, len(videos)))
+    @use_cache.setter
+    def use_cache(self, value):
+        self._validate_settings(update=self.update, use_cache=value)
+        self._use_cache = value
 
+    def _validate_settings(self, update, use_cache):
+        if not update and not use_cache:
+            raise AttributeError(
+                "At least one of update or use_cache must be True")
+
+    def load(self):
+        storage = _FileMapStorage(self.directory)
+        self.contents = storage.load(self.use_cache)
+        if self.update:
+            self._update_content()
+        storage.save(self.contents)
+
+    def _update_content(self):
+        """
+        Update the contents of this filemap
+        """
+        log.info("Updating contents...")
+        filter = Filter()
+        if self.use_cache:
+            self._prune_missing_files()
+        for dir_path, dir_names, file_names in self._file_tree():
+            cprint("green", "Working in directory: %s" % dir_path)
+
+            video_files = filter.only_videos(file_names)
+            log.info("Total videos in %s: %s" % (dir_path, len(video_files)))
+
+            if log.level > logging.INFO:
+                video_files = tqdm(video_files)
+
+            for video_file in video_files:
+                self._update_video(dir_path, video_file)
+
+    def _update_video(self, dir_path, video_name):
+        if dir_path not in self.contents:
+            self.contents[dir_path] = []
+
+        if video_name not in self.contents[dir_path]:
+            log.info("Parsing %s" % video_name)
+            video = Video(name=video_name, dir_path=dir_path)
+            video.refresh()
+            self.contents[dir_path].append(video)
+
+    def _file_tree(self):
+        if path.isfile(self.directory):
+            log.info("Provided directory is a file, not a directory")
+            file_tree = [(path.dirname(self.directory), [],
+                          [path.basename(self.directory)])]
+        else:
+            file_tree = os.walk(self.directory, followlinks=True)
+        return file_tree
+
+    def _prune_missing_files(self):
+        cprint("blue", "Checking for missing/deleted files...")
+        # Can't mutate the original while we iterate through it
+        contents_copy = deepcopy(self.contents)
         if log.level > logging.INFO:
-            videos = tqdm(videos)
-        changes = False
-        for video in videos:
-            if dirPath not in fileMap:  # Only create if there are videos for this path
-                fileMap[dirPath] = {}
-            if not _videoInCache(video, dirPath, fileMap):
-                changes = True
-                log.info("Parsing %s" % video)
-                videoPath = os.path.join(dirPath, video)
-                fileMap[dirPath][video] = _getVideoMetadata(videoPath)
+            contents_copy = tqdm(contents_copy)
+        for dir_path in contents_copy:
+            if not path.exists(dir_path):
+                log.info("Removing %s from cache" % dir_path)
+                del self.contents[dir_path]
+                continue
 
-        if changes:
-            _saveCachedFileMap(directory, fileMap)
-    return fileMap
+            for video in contents_copy[dir_path]:
+                if not path.exists(video.full_path):
+                    log.info("Removing %s from cache" % video.full_path)
+                    self.contents[dir_path].remove(video)
 
 
-def _getFileMapPicklePath(directory):
-    picklePath = os.path.join(os.path.expanduser("~"), ".video_utils")
-    fileMapName = hashlib.md5(bytes(directory, 'ascii')).hexdigest()
-    fileMapPicklePath = os.path.join(picklePath, fileMapName)
-    return fileMapPicklePath
+class _FileMapStorage:
+    def __init__(self, directory):
+        self.directory = directory
 
+    def load(self, use_cache=True):
+        data = {}
+        if use_cache:
+            if path.exists(self.storage_path):
+                log.info("Loading from cache...")
+                try:
+                    with open(self.storage_path, 'rb') as f:
+                        data = pickle.load(f)
+                except EOFError:
+                    log.error(
+                        f"Failed to load cache! Likely a corrupt cache file ({self.storage_path}). Ignoring cache...")
+        return data
 
-def _saveCachedFileMap(directory, fileMap):
-    log.info("Saving out filemap...")
-    fileMapPicklePath = _getFileMapPicklePath(directory)
-    picklePath = os.path.dirname(fileMapPicklePath)
-    if not os.path.exists(picklePath):
-        os.mkdir(picklePath)
-    with open(fileMapPicklePath, 'wb') as f:
-        pickle.dump(fileMap, f)
+    def save(self, data):
+        log.info("Saving out filemap...")
+        with open(self.storage_path, 'wb') as f:
+            pickle.dump(data, f)
 
-
-def _loadCachedFileMap(directory):
-    fileMapPicklePath = _getFileMapPicklePath(directory)
-
-    fileMap = {}
-    if os.path.exists(fileMapPicklePath):
-        log.info("Loading from cache...")
-        with open(fileMapPicklePath, 'rb') as f:
-            fileMap = pickle.load(f)
-
-    return fileMap
-
-
-def getFileMap(directory, update=True, useCache=True):
-    directory = os.path.realpath(directory)
-
-    fileMap = {}
-    if not useCache and not update:
-        raise Exception("At least one of update or useCache must be True")
-
-    if useCache:
-        fileMap = _loadCachedFileMap(directory)
-
-    if update:
-        fileMap = _updateFileMap(directory, fileMap)
-
-    return fileMap
+    @property
+    def storage_path(self):
+        storage_path = path.join(path.expanduser("~"), ".video_utils")
+        os.makedirs(storage_path, exist_ok=True)
+        name = hashlib.md5(bytes(self.directory, 'ascii')).hexdigest()
+        return path.join(storage_path, name)

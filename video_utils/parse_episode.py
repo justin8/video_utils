@@ -2,10 +2,10 @@ import os
 import re
 import logging
 
-log = logging.getLogger()
+log = logging.getLogger(__name__)
 
 
-def _splitData(filename):
+def _split_data(filename):
     results = re.findall(
         "(.*?)\ ?(?:\-\ ?)?\[?(?:[Ss](?=\d+[eE]\d+))?(\d+)[XxeE](\d+)\]?(?:\ ?\-)?\ ?(.*)", filename)
     if results:
@@ -13,15 +13,15 @@ def _splitData(filename):
     return (None, None, None, None)
 
 
-def parseTVEpisode(filename):
+def parse_episode(filename):
     shortname = os.path.basename(filename)
     shortname = os.path.splitext(shortname)[0]
-    showName, season, episode, episodeName = _splitData(shortname)
+    showName, season, episode, episodeName = _split_data(shortname)
     try:
         season = int(season)
         episode = int(episode)
-    except:
-        pass
+    except TypeError:
+        log.info("Failed to parse season or episode number")
     result = {
         "showName": showName,
         "episode": episode,
