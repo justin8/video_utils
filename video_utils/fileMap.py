@@ -6,7 +6,6 @@ import os
 from os import path
 import hashlib
 import pickle
-from functools import cached_property
 
 from tqdm import tqdm
 
