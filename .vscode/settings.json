@@ -6,5 +6,8 @@
   "python.testing.pytestArgs": ["--no-cov", "tests"],
   "python.linting.enabled": true,
   "python.testing.autoTestDiscoverOnSaveEnabled": true,
-  "python.pythonPath": "${workspaceFolder}/.venv/bin/python"
+  "python.pythonPath": "${workspaceFolder}/.venv/bin/python",
+  "files.associations": {
+    "*.yaml": "home-assistant"
+  }
 }
