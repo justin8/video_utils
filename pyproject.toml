@@ -17,7 +17,6 @@ coverage = "^5.0"
 mock = "^3.0.5"
 pytest = "^5.3"
 flake8 = "^3.7"
-autopep8 = "^1.4"
 pylint = "^2.4.4"
 pytest-cov = "^2.8.1"
 
