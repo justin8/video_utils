@@ -1,5 +1,3 @@
-from .codec import Codec
-
 VALID_EXTENSIONS = ("avi", "divx", "mkv", "mp4", "mpg",
                     "mpeg", "mov", "m4v", "flv", "ts", "wmv")
 

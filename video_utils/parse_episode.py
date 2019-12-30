@@ -7,7 +7,7 @@ log = logging.getLogger(__name__)
 
 def _split_data(filename):
     results = re.findall(
-        "(.*?)\ ?(?:\-\ ?)?\[?(?:[Ss](?=\d+[eE]\d+))?(\d+)[XxeE](\d+)\]?(?:\ ?\-)?\ ?(.*)", filename)
+        r"(.*?)\ ?(?:\-\ ?)?\[?(?:[Ss](?=\d+[eE]\d+))?(\d+)[XxeE](\d+)\]?(?:\ ?\-)?\ ?(.*)", filename)
     if results:
         return results[0]
     return (None, None, None, None)

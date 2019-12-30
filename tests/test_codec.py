@@ -13,8 +13,8 @@ def test_codec():
 def test_codec_minimal():
     c = Codec("foo")
     assert c.format_name == "foo"
-    assert c.ffmpeg_name == None
-    assert c.pretty_name == None
+    assert c.ffmpeg_name is None
+    assert c.pretty_name is None
 
 
 def test_codec_autodetect():

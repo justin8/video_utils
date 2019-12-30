@@ -59,8 +59,9 @@ def test_quality_similar_to(target):
     ]
     for test in tests:
         result = target.quality_similar_to(test["input"])
-        print(
-            f"Testing quality_similar_to for input: {test['input'].width}x{test['input'].height}. Expected result: {test['expected_output']}")
+        print(f"Testing quality_similar_to for input: "
+              f"{test['input'].width}x{test['input'].height}. "
+              f"Expected result: {test['expected_output']}")
         assert result == test["expected_output"]
 
 
