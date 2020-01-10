@@ -1,6 +1,7 @@
 import logging
 import os
 from os import path
+from functools import cached_property
 
 from pymediainfo import MediaInfo
 
@@ -64,19 +65,29 @@ class Video:
         Validator().quality(value)
         self._quality = value
 
+    def _needs_refresh(self):
+        if self.size != self._get_size():
+            return True
+        log.info(f"Skipping refresh on '{self.full_path}'")
+        return False
+
+    def _get_size(self):
+        return os.stat(self.full_path).st_size
+
     def refresh(self):
         """
         Reads the metadata for the given filename and path from the filesystem and saves it to this instance
         """
-        log.info(f"Refreshing data for video: {self.full_path}")
-        self.size = os.stat(self.full_path).st_size
-        metadata = MediaInfo.parse(self.full_path)
-        for track in metadata.tracks:
-            if track.track_type == "Video":
-                self.quality = Validator().quality_similar_to(track)
-                self.codec = Codec(format_name=track.format, )
-                break
-        if self.quality == "Unknown":
-            error_message = f"Failed to parse track metadata from {self.full_path}"
-            log.error(error_message)
-            raise RuntimeError(error_message)
+        if self._needs_refresh():
+            log.info(f"Refreshing data for video: {self.full_path}")
+            self.size = self._get_size()
+            metadata = MediaInfo.parse(self.full_path)
+            for track in metadata.tracks:
+                if track.track_type == "Video":
+                    self.quality = Validator().quality_similar_to(track)
+                    self.codec = Codec(format_name=track.format, )
+                    break
+            if self.quality == "Unknown":
+                error_message = f"Failed to parse track metadata from {self.full_path}"
+                log.error(error_message)
+                raise RuntimeError(error_message)

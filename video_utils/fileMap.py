@@ -6,7 +6,6 @@ import os
 from os import path
 import hashlib
 import pickle
-
 from tqdm import tqdm
 
 from .cprint import cprint
@@ -89,11 +88,17 @@ class FileMap:
         if dir_path not in self.contents:
             self.contents[dir_path] = []
 
-        if video_name not in self.contents[dir_path]:
-            log.info("Parsing %s" % video_name)
-            video = Video(name=video_name, dir_path=dir_path)
-            video.refresh()
-            self.contents[dir_path].append(video)
+        video = Video(name=video_name, dir_path=dir_path)
+        if video in self.contents[dir_path]:
+            log.info(
+                f"Video ({video.full_path} already in cache. Checking for updates and replacing...)")
+            video = next(i for i in self.contents[dir_path] if i == video)
+            self.contents[dir_path].remove(video)
+        video.refresh()
+        self.contents[dir_path].append(video)
+
+    def _video_needs_refreshing(self, video):
+        pass
 
     def _file_tree(self):
         if path.isfile(self.directory):
