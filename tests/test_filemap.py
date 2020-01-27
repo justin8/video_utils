@@ -34,8 +34,8 @@ def os_walk():
 def mock_contents():
     current_dir = path.dirname(path.abspath(__file__))
     test_data_dir = path.join(current_dir, "testData")
-    metadata_file = path.join(test_data_dir, "contents.pickle")
-    with open(metadata_file, "rb") as f:
+    contents_file = path.join(test_data_dir, "contents.pickle")
+    with open(contents_file, "rb") as f:
         return pickle.load(f)
 
 
