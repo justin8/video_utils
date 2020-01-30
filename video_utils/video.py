@@ -1,7 +1,6 @@
 import logging
 import os
 from os import path
-from functools import cached_property
 
 from pymediainfo import MediaInfo
 
