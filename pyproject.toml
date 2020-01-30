@@ -1,9 +1,15 @@
 [tool.poetry]
 name = "video_utils"
-version = "2.0.4"
+version = "2.0.5"
 description = "This library is used for lots of shared functionality around parsing TV shows and movies"
 authors = ["Justin Dray <justin@dray.be>"]
 license = "MIT"
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3 :: Only"
+]
 
 [tool.poetry.dependencies]
 python = "^3.6"
