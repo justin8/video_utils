@@ -54,14 +54,49 @@ def test_quality_similar_to(target):
         {"input": StubTrack(10, 720), "expected_output": "720p"},
         {"input": StubTrack(1100, 650), "expected_output": "720p"},
         {"input": StubTrack(800, 600), "expected_output": "SD"},
-        {"input": StubTrack(100000, 100000), "expected_output": "Unknown"},
-
+        {"input": StubTrack(3840, 2160), "expected_output": "2160p"},
+        {"input": StubTrack(3840, 10), "expected_output": "2160p"},
+        {"input": StubTrack(10, 2160), "expected_output": "2160p"},
+        {"input": StubTrack(3600, 1800), "expected_output": "2160p"},
     ]
     for test in tests:
         result = target.quality_similar_to(test["input"])
         print(f"Testing quality_similar_to for input: "
               f"{test['input'].width}x{test['input'].height}. "
               f"Expected result: {test['expected_output']}")
+        assert result == test["expected_output"]
+
+
+def test_track_resolution_similar_to(target):
+    tests = [
+        {"track": StubTrack(1920, 1080), "width": 1920,
+         "height": 1080, "expected_output": True},
+        {"track": StubTrack(1920, 1080), "width": 1920,
+         "height": 10, "expected_output": True},
+        {"track": StubTrack(1920, 1080), "width": 10,
+         "height": 1080, "expected_output": True},
+        {"track": StubTrack(1920, 10), "width": 1920,
+         "height": 1080, "expected_output": True},
+        {"track": StubTrack(10, 1080), "width": 1920,
+         "height": 1080, "expected_output": True},
+        {"track": StubTrack(1800, 900), "width": 1920,
+         "height": 1080, "expected_output": True},
+        {"track": StubTrack(1800, 900), "width": 1920,
+         "height": 1080, "expected_output": True},
+        {"track": StubTrack(1800, 900), "width": 1920,
+         "height": 1080, "expected_output": True},
+        {"track": StubTrack(1920, 1080), "width": 1280,
+         "height": 720, "expected_output": False},
+        {"track": StubTrack(1920, 1080), "width": 3840,
+         "height": 2160, "expected_output": False},
+        {"track": StubTrack(1920, 1080), "width": 720,
+         "height": 576, "expected_output": False},
+    ]
+
+    for test in tests:
+        result = target.track_resolution_similar_to(
+            test["track"], test["width"], test["height"])
+        print(f"Testing track_resolution_similar_to for input: {test}")
         assert result == test["expected_output"]
 
 

@@ -2,7 +2,7 @@ VALID_EXTENSIONS = ("avi", "divx", "mkv", "mp4", "mpg",
                     "mpeg", "mov", "m4v", "flv", "ts", "wmv")
 
 # This can't be an enum because you can't have numbers at the start of the enums
-VALID_QUALITIES = ("1080p", "720p", "SD", "Unknown")
+VALID_QUALITIES = ("2160p", "1080p", "720p", "SD", "Unknown")
 
 
 class Validator:
@@ -12,13 +12,11 @@ class Validator:
 
     def quality_similar_to(self, track):
         # TODO: Refactor this; it's not a validator
-        if self._similar_to(track.width, 1920):
+        if self.track_resolution_similar_to(track, 3840, 2160):
+            return "2160p"
+        if self.track_resolution_similar_to(track, 1920, 1080):
             return "1080p"
-        if self._similar_to(track.height, 1080):
-            return "1080p"
-        if self._similar_to(track.width, 1280):
-            return "720p"
-        if self._similar_to(track.height, 720):
+        if self.track_resolution_similar_to(track, 1280, 720):
             return "720p"
         if track.width < 1000:
             return "SD"
@@ -27,6 +25,9 @@ class Validator:
     def quality(self, quality):
         if quality not in VALID_QUALITIES:
             raise AttributeError(f"Invalid quality: {quality}")
+
+    def track_resolution_similar_to(self, track, width, height):
+        return self._similar_to(track.width, width) or self._similar_to(track.height, height)
 
     def _similar_to(self, value, target):
         value = float(value)

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "video_utils"
-version = "2.0.6"
+version = "2.0.8"
 description = "This library is used for lots of shared functionality around parsing TV shows and movies"
 authors = ["Justin Dray <justin@dray.be>"]
 license = "MIT"
