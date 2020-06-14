@@ -3,7 +3,6 @@
 # Key is the codec format returned by MediaInfo
 CODEC_DATA = {
     "HEVC": {"ffmpeg_name": "libx265", "pretty_name": "x265"},
-    "HEVC_NVENC": {"ffmpeg_name": "hevc_nvenc", "pretty_name": "x265"},
     "AVC": {"ffmpeg_name": "h264", "pretty_name": "x264"},
     "AAC": {"ffmpeg_name": "aac", "pretty_name": "aac"},
 }
