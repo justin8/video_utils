@@ -1,11 +1,11 @@
 from colorama import Fore, Style
 
 
-def cprint(colour, message):
+def colour(colour, message):
     colours = {
         "green": Fore.GREEN,
         "blue": Fore.BLUE,
         "red": Fore.RED,
         "yellow": Fore.YELLOW
     }
-    print(colours[colour] + str(message) + Style.RESET_ALL)
+    return(colours[colour] + str(message) + Style.RESET_ALL)

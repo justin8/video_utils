@@ -8,7 +8,7 @@ import hashlib
 import pickle
 from tqdm import tqdm
 
-from .cprint import cprint
+from .colour import colour
 from .validators import Filter
 from .video import Video
 
@@ -73,7 +73,7 @@ class FileMap:
         if self.use_cache:
             self._prune_missing_files()
         for dir_path, dir_names, file_names in self._file_tree():
-            cprint("green", "Working in directory: %s" % dir_path)
+            log.info(colour("green", "Working in directory: %s" % dir_path))
 
             video_files = filter.only_videos(file_names)
             log.debug("Total videos in %s: %s" % (dir_path, len(video_files)))
@@ -110,7 +110,7 @@ class FileMap:
         return file_tree
 
     def _prune_missing_files(self):
-        cprint("blue", "Checking for missing/deleted files...")
+        log.info(colour("blue", "Checking for missing/deleted files..."))
         # Can't mutate the original while we iterate through it
         contents_copy = deepcopy(self.contents)
         if log.level > logging.INFO:
