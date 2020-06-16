@@ -67,7 +67,7 @@ class Video:
     def _needs_refresh(self):
         if self.size != self._get_size():
             return True
-        log.info(f"Skipping refresh on '{self.full_path}'")
+        log.debug(f"Skipping refresh on '{self.full_path}'")
         return False
 
     def _get_size(self):
@@ -78,7 +78,7 @@ class Video:
         Reads the metadata for the given filename and path from the filesystem and saves it to this instance
         """
         if self._needs_refresh():
-            log.info(f"Refreshing data for video: {self.full_path}")
+            log.debug(f"Refreshing data for video: {self.full_path}")
             self.size = self._get_size()
             metadata = MediaInfo.parse(self.full_path)
             for track in metadata.tracks:

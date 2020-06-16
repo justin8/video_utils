@@ -68,7 +68,7 @@ class FileMap:
         """
         Update the contents of this filemap
         """
-        log.info("Updating contents...")
+        log.debug("Updating contents...")
         filter = Filter()
         if self.use_cache:
             self._prune_missing_files()
@@ -76,7 +76,7 @@ class FileMap:
             cprint("green", "Working in directory: %s" % dir_path)
 
             video_files = filter.only_videos(file_names)
-            log.info("Total videos in %s: %s" % (dir_path, len(video_files)))
+            log.debug("Total videos in %s: %s" % (dir_path, len(video_files)))
 
             if log.level > logging.INFO:
                 video_files = tqdm(video_files)
@@ -90,7 +90,7 @@ class FileMap:
 
         video = Video(name=video_name, dir_path=dir_path)
         if video in self.contents[dir_path]:
-            log.info(
+            log.debug(
                 f"Video ({video.full_path} already in cache. Checking for updates and replacing...)")
             video = next(i for i in self.contents[dir_path] if i == video)
             self.contents[dir_path].remove(video)
@@ -102,7 +102,7 @@ class FileMap:
 
     def _file_tree(self):
         if path.isfile(self.directory):
-            log.info("Provided directory is a file, not a directory")
+            log.debug("Provided directory is a file, not a directory")
             file_tree = [(path.dirname(self.directory), [],
                           [path.basename(self.directory)])]
         else:
@@ -117,13 +117,13 @@ class FileMap:
             contents_copy = tqdm(contents_copy)
         for dir_path in contents_copy:
             if not path.exists(dir_path):
-                log.info("Removing %s from cache" % dir_path)
+                log.debug("Removing %s from cache" % dir_path)
                 del self.contents[dir_path]
                 continue
 
             for video in contents_copy[dir_path]:
                 if not path.exists(video.full_path):
-                    log.info("Removing %s from cache" % video.full_path)
+                    log.debug("Removing %s from cache" % video.full_path)
                     self.contents[dir_path].remove(video)
 
 
@@ -135,7 +135,7 @@ class _FileMapStorage:
         data = {}
         if use_cache:
             if path.exists(self.storage_path):
-                log.info("Loading from cache...")
+                log.debug("Loading from cache...")
                 try:
                     with open(self.storage_path, 'rb') as f:
                         data = pickle.load(f)
@@ -145,7 +145,7 @@ class _FileMapStorage:
         return data
 
     def save(self, data):
-        log.info("Saving out filemap...")
+        log.debug("Saving out filemap...")
         with open(self.storage_path, 'wb') as f:
             pickle.dump(data, f)
 

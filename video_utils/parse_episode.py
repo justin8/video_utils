@@ -21,7 +21,7 @@ def parse_episode(filename):
         season = int(season)
         episode = int(episode)
     except TypeError:
-        log.info("Failed to parse season or episode number")
+        log.debug("Failed to parse season or episode number")
     result = {
         "showName": showName,
         "episode": episode,
