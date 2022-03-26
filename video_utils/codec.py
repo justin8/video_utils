@@ -32,10 +32,9 @@ class Codec:
 
     def _autodetect(self):
         try:
-            self._data = CODEC_DATA[next(
-                x for x in CODEC_DATA if x == self.format_name)]
+            self._data = CODEC_DATA[self.format_name]
             self.pretty_name = self.pretty_name if self.pretty_name else self._data["pretty_name"]
-        except StopIteration:
+        except KeyError:
             pass  # No match found
 
     def get_ffmpeg_name(self, encoder="software"):
