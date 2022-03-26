@@ -24,6 +24,20 @@ def test_codec_autodetect():
     assert c.pretty_name == "x265"
 
 
+def test_codec_nvidia():
+    c = Codec("HEVC", encoder="nvidia")
+    assert c.format_name == "HEVC"
+    assert c.ffmpeg_name == "hevc_nvenc"
+    assert c.pretty_name == "x265"
+
+
+def test_codec_intel():
+    c = Codec("HEVC", encoder="intel")
+    assert c.format_name == "HEVC"
+    assert c.ffmpeg_name == "hevc_qsv"
+    assert c.pretty_name == "x265"
+
+
 def test_codec_equality():
     dummy_codec = Codec("AVC", ffmpeg_name="h264", pretty_name="x264")
     different_codec = Codec("HEVC", ffmpeg_name="libx265", pretty_name="x265")
