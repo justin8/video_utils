@@ -10,11 +10,10 @@ CODEC_DATA = {
 
 class Codec:
 
-    def __init__(self, format_name, ffmpeg_name=None, pretty_name=None, encoder="software"):
+    def __init__(self, format_name, ffmpeg_name=None, pretty_name=None):
         self.format_name = format_name
-        self.ffmpeg_name = ffmpeg_name
+        self._ffmpeg_name = ffmpeg_name
         self.pretty_name = pretty_name
-        self.encoder = encoder
         self._autodetect()
 
     def __eq__(self, other):
@@ -32,9 +31,16 @@ class Codec:
 
     def _autodetect(self):
         try:
-            data = CODEC_DATA[next(
+            self._data = CODEC_DATA[next(
                 x for x in CODEC_DATA if x == self.format_name)]
-            self.ffmpeg_name = self.ffmpeg_name if self.ffmpeg_name else data["ffmpeg_names"][self.encoder]
-            self.pretty_name = self.pretty_name if self.pretty_name else data["pretty_name"]
+            self.pretty_name = self.pretty_name if self.pretty_name else self._data["pretty_name"]
         except StopIteration:
             pass  # No match found
+
+    def get_ffmpeg_name(self, encoder="software"):
+        if self._ffmpeg_name:
+            return self._ffmpeg_name
+        try:
+            return self._data["ffmpeg_names"][encoder]
+        except:
+            return None

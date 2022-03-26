@@ -6,35 +6,35 @@ from video_utils import Codec
 def test_codec():
     c = Codec("AVC", "h264", "x264")
     assert c.format_name == "AVC"
-    assert c.ffmpeg_name == "h264"
+    assert c.get_ffmpeg_name() == "h264"
     assert c.pretty_name == "x264"
 
 
 def test_codec_minimal():
     c = Codec("foo")
     assert c.format_name == "foo"
-    assert c.ffmpeg_name is None
+    assert c.get_ffmpeg_name() is None
     assert c.pretty_name is None
 
 
 def test_codec_autodetect():
     c = Codec("HEVC")
     assert c.format_name == "HEVC"
-    assert c.ffmpeg_name == "libx265"
+    assert c.get_ffmpeg_name() == "libx265"
     assert c.pretty_name == "x265"
 
 
 def test_codec_nvidia():
-    c = Codec("HEVC", encoder="nvidia")
+    c = Codec("HEVC")
     assert c.format_name == "HEVC"
-    assert c.ffmpeg_name == "hevc_nvenc"
+    assert c.get_ffmpeg_name("nvidia") == "hevc_nvenc"
     assert c.pretty_name == "x265"
 
 
 def test_codec_intel():
-    c = Codec("HEVC", encoder="intel")
+    c = Codec("HEVC")
     assert c.format_name == "HEVC"
-    assert c.ffmpeg_name == "hevc_qsv"
+    assert c.get_ffmpeg_name("intel") == "hevc_qsv"
     assert c.pretty_name == "x265"
 
 
