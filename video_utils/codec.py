@@ -2,6 +2,7 @@
 
 # Key is the codec format returned by MediaInfo
 CODEC_DATA = {
+    "AV1": {"ffmpeg_names": {"software": "libaom-av1"}, "pretty_name": "av1"},
     "HEVC": {"ffmpeg_names": {"software": "libx265", "nvidia": "hevc_nvenc", "intel": "hevc_qsv"}, "pretty_name": "x265"},
     "AVC": {"ffmpeg_names": {"software": "h264", "nvidia": "h264_nvenc", "intel": "h264_qsv"}, "pretty_name": "x264"},
     "AAC": {"ffmpeg_names": {"software": "aac"}, "pretty_name": "aac"},
