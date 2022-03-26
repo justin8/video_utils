@@ -32,7 +32,7 @@ class Validator:
     def _similar_to(self, value, target):
         value = float(value)
         target = float(target)
-        return target * 0.9 <= value <= target * 1.1
+        return target * 0.85 <= value <= target * 1.2
 
 
 class Filter:
