@@ -151,7 +151,7 @@ class _FileMapStorage:
 
     @property
     def storage_path(self):
-        storage_path = path.join(path.expanduser("~"), ".video_utils")
+        storage_path = path.join(path.expanduser("~"), ".local", "share", "video_utils")
         os.makedirs(storage_path, exist_ok=True)
         name = hashlib.md5(bytes(self.directory, 'ascii')).hexdigest()
         return path.join(storage_path, name)
