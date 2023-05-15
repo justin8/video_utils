@@ -6,7 +6,7 @@ import os
 from os import path
 import hashlib
 import pickle
-from tqdm import tqdm
+from rich.progress import track
 
 from .colour import colour
 from .validators import Filter
@@ -80,7 +80,7 @@ class FileMap:
             log.debug("Total videos in %s: %s" % (dir_path, len(video_files)))
 
             if self._progress_bar:
-                video_files = tqdm(video_files)
+                video_files = track(video_files)
 
             for video_file in video_files:
                 self._update_video(dir_path, video_file)
@@ -124,7 +124,7 @@ class FileMap:
 
             sub_directory = contents_copy[dir_path]
             if self._progress_bar:
-                sub_directory = tqdm(sub_directory)
+                sub_directory = track(sub_directory)
 
             for video in sub_directory:
                 if not path.exists(video.full_path):
