@@ -8,4 +8,4 @@ def colour(colour, message):
         "red": Fore.RED,
         "yellow": Fore.YELLOW
     }
-    return(colours[colour] + str(message) + Style.RESET_ALL)
+    return (colours[colour] + str(message) + Style.RESET_ALL)

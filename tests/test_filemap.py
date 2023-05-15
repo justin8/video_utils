@@ -92,9 +92,8 @@ def test_load_skips_update(mock_update_content, mock_storage, target):
 @patch.object(fileMap.FileMap, "_prune_missing_files")
 @patch.object(fileMap.FileMap, "_update_video")
 @patch.object(fileMap.FileMap, "_file_tree")
-@patch("video_utils.fileMap.tqdm")
 @patch("video_utils.validators.Filter")
-def test_update_content_prunes_on_cache_use(mock_filter, mock_tqdm, mock_file_tree, mock_update_video, mock_prune, target):
+def test_update_content_prunes_on_cache_use(mock_filter, mock_file_tree, mock_update_video, mock_prune, target):
     target._update_content()
     assert mock_prune.called
 
@@ -102,9 +101,8 @@ def test_update_content_prunes_on_cache_use(mock_filter, mock_tqdm, mock_file_tr
 @patch.object(fileMap.FileMap, "_prune_missing_files")
 @patch.object(fileMap.FileMap, "_update_video")
 @patch.object(fileMap.FileMap, "_file_tree")
-@patch("video_utils.fileMap.tqdm")
 @patch("video_utils.validators.Filter")
-def test_update_content_no_cache_fork(mock_filter, mock_tqdm, mock_file_tree, mock_update_video, mock_prune, target):
+def test_update_content_no_cache_fork(mock_filter, mock_file_tree, mock_update_video, mock_prune, target):
     target.use_cache = False
     target._update_content()
     assert not mock_prune.called
@@ -112,9 +110,8 @@ def test_update_content_no_cache_fork(mock_filter, mock_tqdm, mock_file_tree, mo
 
 @patch.object(fileMap.FileMap, "_prune_missing_files")
 @patch.object(fileMap.FileMap, "_update_video")
-@patch("video_utils.fileMap.tqdm")
 @patch("video_utils.validators.Filter")
-def test_update_content(mock_filter, mock_tqdm, mock_update_video, mock_prune, target, os_walk):
+def test_update_content(mock_filter, mock_update_video, mock_prune, target, os_walk):
     target._file_tree = lambda: os_walk
     target._update_content()
 

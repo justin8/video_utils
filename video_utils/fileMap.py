@@ -16,13 +16,14 @@ log = logging.getLogger(__name__)
 
 
 class FileMap:
-    def __init__(self, directory, update=True, use_cache=True):
+    def __init__(self, directory, update=True, use_cache=True, progress_bar=True):
         """
         update and use_cache values are only honoured on object initialization
         """
         self.directory = directory
         self._update = update
         self._use_cache = use_cache
+        self._progress_bar = progress_bar
         self.contents = {}
         self._validate_settings(update=self.update, use_cache=self.use_cache)
 
@@ -78,7 +79,7 @@ class FileMap:
             video_files = filter.only_videos(file_names)
             log.debug("Total videos in %s: %s" % (dir_path, len(video_files)))
 
-            if log.level > logging.INFO:
+            if self._progress_bar:
                 video_files = tqdm(video_files)
 
             for video_file in video_files:
@@ -113,15 +114,19 @@ class FileMap:
         log.info(colour("blue", "Checking for missing/deleted files..."))
         # Can't mutate the original while we iterate through it
         contents_copy = deepcopy(self.contents)
-        if log.level > logging.INFO:
-            contents_copy = tqdm(contents_copy)
         for dir_path in contents_copy:
+            log.info(colour("blue", f"Processing directory {dir_path}"))
+
             if not path.exists(dir_path):
                 log.debug("Removing %s from cache" % dir_path)
                 del self.contents[dir_path]
                 continue
 
-            for video in contents_copy[dir_path]:
+            sub_directory = contents_copy[dir_path]
+            if self._progress_bar:
+                sub_directory = tqdm(sub_directory)
+
+            for video in sub_directory:
                 if not path.exists(video.full_path):
                     log.debug("Removing %s from cache" % video.full_path)
                     self.contents[dir_path].remove(video)
