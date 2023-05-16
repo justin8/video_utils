@@ -1,7 +1,10 @@
 # Video Utils
 
-![Test Status](https://github.com/justin8/video_utils/workflows/Tests/badge.svg?branch=master)
+[![Supported Python Versions](https://img.shields.io/pypi/pyversions/video_utils)](https://pypi.org/project/video_utils/) [![PyPI version](https://badge.fury.io/py/video_utils.svg)](https://badge.fury.io/py/video_utils)
+
+[![Workflow](https://github.com/justin8/video_utils/actions/workflows/workflow.yml/badge.svg)](https://github.com/justin8/video_utils/actions/workflows/workflow.yml)
 [![codecov](https://codecov.io/gh/justin8/video_utils/branch/master/graph/badge.svg)](https://codecov.io/gh/justin8/video_utils)
+[![Downloads](https://pepy.tech/badge/video_utils/month)](https://pepy.tech/project/video_utils)
 
 This library provides utilities for dealing with TV show and Movie files and the metadata around them.
 
