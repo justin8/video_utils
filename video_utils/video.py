@@ -1,8 +1,10 @@
 import logging
 import os
 from os import path
+from typing import List
 
 from pymediainfo import MediaInfo
+from iso639 import to_iso639_2
 
 from .validators import Validator
 from .codec import Codec
@@ -11,12 +13,15 @@ log = logging.getLogger(__name__)
 
 
 class Video:
-    def __init__(self, name, dir_path, codec=None, quality=None, size=None):
+    def __init__(self, name, dir_path, codec=None, quality=None, size=None, video_track=None, audio_tracks=None, text_tracks=None):
         self.name = name
         self.dir_path = dir_path
         self.codec = codec
         self.quality = quality
         self.size = size
+        self.video_track = video_track
+        self.audio_tracks = audio_tracks
+        self.text_tracks = text_tracks
 
     def __eq__(self, other):
         if not isinstance(other, Video):
@@ -32,7 +37,19 @@ class Video:
         return self.__repr__()
 
     @property
-    def dir_path(self):
+    def subtitle_languages(self) -> List[str]:
+        if self.text_tracks:
+            return [to_iso639_2(x.language) for x in self.text_tracks]
+        return []
+
+    @property
+    def audio_languages(self) -> List[str]:
+        if self.audio_tracks:
+            return [to_iso639_2(x.language) for x in self.audio_tracks]
+        return []
+
+    @property
+    def dir_path(self) -> str:
         return self._dir_path
 
     @dir_path.setter
@@ -40,7 +57,7 @@ class Video:
         self._dir_path = path.realpath(value)
 
     @property
-    def full_path(self):
+    def full_path(self) -> str:
         return path.join(self.dir_path, self.name)
 
     @property
@@ -81,11 +98,15 @@ class Video:
             log.debug(f"Refreshing data for video: {self.full_path}")
             self.size = self._get_size()
             metadata = MediaInfo.parse(self.full_path)
-            for track in metadata.tracks:
-                if track.track_type == "Video":
-                    self.quality = Validator().quality_similar_to(track)
-                    self.codec = Codec(format_name=track.format, )
-                    break
+            self.audio_tracks = metadata.audio_tracks  # type: ignore
+            self.text_tracks = metadata.text_tracks  # type: ignore
+            try:
+                self.video_track = metadata.video_tracks[0]  # type: ignore
+            except IndexError:
+                raise RuntimeError
+
+            self.quality = Validator().quality_similar_to(self.video_track)
+            self.codec = Codec(format_name=self.video_track.format)
             if self.quality == "Unknown":
                 error_message = f"Failed to parse track metadata from {self.full_path}"
                 log.error(error_message)

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "video_utils"
-version = "2.2.5"
+version = "2.3.0"
 description = "This library is used for lots of shared functionality around parsing TV shows and movies"
 authors = ["Justin Dray <justin@dray.be>"]
 license = "MIT"
@@ -17,6 +17,7 @@ colorama = "^0.4.6"
 pymediainfo = "^6.0.1"
 ffmpy = "^0.3.0"
 rich = "^13.3.5"
+iso639 = "^0.1.4"
 
 [tool.poetry.dev-dependencies]
 coverage = "^7.2.5"

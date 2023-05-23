@@ -154,3 +154,29 @@ def test_refresh_failure(mock_validator, mock_stat, mock_media_info):
     v = Video("foo.mkv", "/not-a-real-path/bar")
     with pytest.raises(RuntimeError):
         v.refresh()
+
+
+@patch("video_utils.video.MediaInfo", autospec=True)
+@patch("os.stat", autospec=True)
+@patch("video_utils.validators.Validator", autospec=True)
+def test_subtitle_languages(mock_validator, mock_stat, mock_media_info):
+    mock_stat.return_value = stat_return()
+    metadata = metadata_return()
+    mock_media_info.parse.return_value = metadata
+
+    v = Video("foo.mkv", "/not-a-real-path/bar")
+    v.refresh()
+    assert v.subtitle_languages == ["eng", "eng"]
+
+
+@patch("video_utils.video.MediaInfo", autospec=True)
+@patch("os.stat", autospec=True)
+@patch("video_utils.validators.Validator", autospec=True)
+def test_audio_languages(mock_validator, mock_stat, mock_media_info):
+    mock_stat.return_value = stat_return()
+    metadata = metadata_return()
+    mock_media_info.parse.return_value = metadata
+
+    v = Video("foo.mkv", "/not-a-real-path/bar")
+    v.refresh()
+    assert v.audio_languages == ["jpn"]
