@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from copy import deepcopy
 import logging
 import os
@@ -7,6 +5,7 @@ from os import path
 import hashlib
 import pickle
 from rich.progress import track
+from typing import Dict, List
 
 from .colour import colour
 from .validators import Filter
@@ -16,56 +15,55 @@ log = logging.getLogger(__name__)
 
 
 class FileMap:
-    def __init__(self, directory, update=True, use_cache=True, progress_bar=True):
+    def __init__(self, directory: str, update: bool = True, use_cache: bool = True, progress_bar: bool = True):
         """
         update and use_cache values are only honoured on object initialization
         """
-        self.directory = directory
-        self._update = update
-        self._use_cache = use_cache
-        self._progress_bar = progress_bar
-        self.contents = {}
-        self._validate_settings(update=self.update, use_cache=self.use_cache)
+        self.directory: str = directory
+        self._update: bool = update
+        self._use_cache: bool = use_cache
+        self._progress_bar: bool = progress_bar
+        self.contents: Dict[str, List[Video]] = {}
+        self._validate_settings(update=self._update, use_cache=self._use_cache)
 
     @property
-    def directory(self):
+    def directory(self) -> str:
         return self._directory
 
     @directory.setter
-    def directory(self, value):
+    def directory(self, value: str) -> None:
         self._directory = path.realpath(value)
 
     @property
-    def update(self):
+    def update(self) -> bool:
         return self._update
 
     @update.setter
-    def update(self, value):
+    def update(self, value: bool) -> None:
         self._validate_settings(update=value, use_cache=self.use_cache)
         self._update = value
 
     @property
-    def use_cache(self):
+    def use_cache(self) -> bool:
         return self._use_cache
 
     @use_cache.setter
-    def use_cache(self, value):
+    def use_cache(self, value: bool) -> None:
         self._validate_settings(update=self.update, use_cache=value)
         self._use_cache = value
 
-    def _validate_settings(self, update, use_cache):
+    def _validate_settings(self, update: bool, use_cache: bool) -> None:
         if not update and not use_cache:
-            raise AttributeError(
-                "At least one of update or use_cache must be True")
+            raise AttributeError("At least one of update or use_cache must be True")
 
-    def load(self):
+    def load(self) -> None:
         storage = _FileMapStorage(self.directory)
         self.contents = storage.load(self.use_cache)
         if self.update:
             self._update_content()
         storage.save(self.contents)
 
-    def _update_content(self):
+    def _update_content(self) -> None:
         """
         Update the contents of this filemap
         """
@@ -85,7 +83,7 @@ class FileMap:
             for video_file in video_files:
                 self._update_video(dir_path, video_file)
 
-    def _update_video(self, dir_path, video_name):
+    def _update_video(self, dir_path: str, video_name: str) -> None:
         if dir_path not in self.contents:
             self.contents[dir_path] = []
 
@@ -98,7 +96,7 @@ class FileMap:
         video.refresh()
         self.contents[dir_path].append(video)
 
-    def _video_needs_refreshing(self, video):
+    def _video_needs_refreshing(self, video: Video) -> None:
         pass
 
     def _file_tree(self):
@@ -110,7 +108,7 @@ class FileMap:
             file_tree = os.walk(self.directory, followlinks=True)
         return file_tree
 
-    def _prune_missing_files(self):
+    def _prune_missing_files(self) -> None:
         log.info(colour("blue", "Checking for missing/deleted files..."))
         # Can't mutate the original while we iterate through it
         contents_copy = deepcopy(self.contents)
@@ -133,10 +131,10 @@ class FileMap:
 
 
 class _FileMapStorage:
-    def __init__(self, directory):
+    def __init__(self, directory: str) -> None:
         self.directory = directory
 
-    def load(self, use_cache=True):
+    def load(self, use_cache: bool = True) -> Dict[str, List[Video]]:
         data = {}
         if use_cache:
             if path.exists(self.storage_path):
@@ -149,13 +147,13 @@ class _FileMapStorage:
                         f"Failed to load cache! Likely a corrupt cache file ({self.storage_path}). Ignoring cache...")
         return data
 
-    def save(self, data):
+    def save(self, data: Dict[str, List[Video]]) -> None:
         log.debug("Saving out filemap...")
         with open(self.storage_path, 'wb') as f:
             pickle.dump(data, f)
 
     @property
-    def storage_path(self):
+    def storage_path(self) -> str:
         storage_path = path.join(path.expanduser("~"), ".local", "share", "video_utils")
         os.makedirs(storage_path, exist_ok=True)
         name = hashlib.md5(bytes(self.directory, 'ascii')).hexdigest()

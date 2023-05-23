@@ -1,3 +1,5 @@
+import pytest
+
 from video_utils.parse_episode import parse_episode
 
 
@@ -80,7 +82,6 @@ def test_squareBrackets():
 
 def test_badFilename():
     testFilename = "Star Trek (2009).mkv"
-    expectedResult = {'showName': None, 'episode': None,
-                      'episodeName': None, 'season': None}
 
-    assert parse_episode(testFilename) == expectedResult
+    with pytest.raises(ValueError):
+        parse_episode(testFilename)

@@ -1,7 +1,7 @@
 import logging
 import os
 from os import path
-from typing import List
+from typing import List, Optional
 
 from pymediainfo import MediaInfo
 from iso639 import to_iso639_2
@@ -13,7 +13,17 @@ log = logging.getLogger(__name__)
 
 
 class Video:
-    def __init__(self, name, dir_path, codec=None, quality=None, size=None, video_track=None, audio_tracks=None, text_tracks=None):
+    def __init__(
+        self,
+        name: str,
+        dir_path: str,
+        codec: Optional[Codec] = None,
+        quality: Optional[str] = None,
+        size: Optional[int] = None,
+        video_track: Optional[object] = None,
+        audio_tracks: Optional[List[object]] = None,
+        text_tracks: Optional[List[object]] = None,
+    ):
         self.name = name
         self.dir_path = dir_path
         self.codec = codec
@@ -23,17 +33,17 @@ class Video:
         self.audio_tracks = audio_tracks
         self.text_tracks = text_tracks
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, Video):
             # don't attempt to compare against unrelated types
             return NotImplemented
 
         return self.full_path == other.full_path
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Video name={self.name} codec={self.codec} quality={self.quality}>"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.__repr__()
 
     @property
@@ -53,7 +63,7 @@ class Video:
         return self._dir_path
 
     @dir_path.setter
-    def dir_path(self, value):
+    def dir_path(self, value: str) -> None:
         self._dir_path = path.realpath(value)
 
     @property
@@ -61,36 +71,36 @@ class Video:
         return path.join(self.dir_path, self.name)
 
     @property
-    def codec(self):
+    def codec(self) -> Optional[Codec]:
         return self._codec
 
     @codec.setter
-    def codec(self, value):
+    def codec(self, value: Optional[Codec]) -> None:
         if value is not None and not isinstance(value, Codec):
             raise TypeError("An object of type Codec must be specified")
         self._codec = value
 
     @property
-    def quality(self):
+    def quality(self) -> Optional[str]:
         return self._quality
 
     @quality.setter
-    def quality(self, value):
+    def quality(self, value: Optional[str]) -> None:
         if value is None:
             value = "Unknown"
         Validator().quality(value)
         self._quality = value
 
-    def _needs_refresh(self):
+    def _needs_refresh(self) -> bool:
         if self.size != self._get_size():
             return True
         log.debug(f"Skipping refresh on '{self.full_path}'")
         return False
 
-    def _get_size(self):
+    def _get_size(self) -> int:
         return os.stat(self.full_path).st_size
 
-    def refresh(self):
+    def refresh(self) -> None:
         """
         Reads the metadata for the given filename and path from the filesystem and saves it to this instance
         """
