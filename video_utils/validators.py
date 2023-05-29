@@ -1,3 +1,5 @@
+from os.path import basename
+
 VALID_EXTENSIONS = ("avi", "divx", "mkv", "mp4", "mpg",
                     "mpeg", "mov", "m4v", "flv", "ts", "wmv")
 
@@ -9,6 +11,9 @@ class Validator:
 
     def is_video(self, file_path):
         return file_path.lower().endswith(VALID_EXTENSIONS)
+
+    def is_temporary_file(self, file_path):
+        return basename(file_path).lower().startswith("._")
 
     def quality_similar_to(self, track):
         # TODO: Refactor this; it's not a validator
@@ -40,7 +45,7 @@ class Filter:
         validator = Validator()
         videos = []
         for filename in file_list:
-            if validator.is_video(filename):
+            if validator.is_video(filename) and not validator.is_temporary_file(filename):
                 videos.append(filename)
         videos.sort()
         return videos

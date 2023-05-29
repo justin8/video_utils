@@ -37,6 +37,27 @@ def test_is_not_video(target):
         assert not target.is_video(video)
 
 
+def test_is_temporary_file(target):
+    video_filenames = ["._test file 123x124 - name.avi",
+                       "._test file 123x124 - name.mkv",
+                       "._test file 123x124 - name.txt",
+                       "._test file 123x124 - name.mpg",
+                       "/path/to/file/._test file 123x124 - name.mpeg",
+                       ]
+    for video in video_filenames:
+        assert target.is_temporary_file(video)
+
+
+def test_is_not_temporary_file(target):
+    non_video_filenames = ["test file 123x124 - name.mkv",
+                           "test file 123x124 - name.bar",
+                           "test file 123x124 - name.api",
+                           "test file 123x124 - name.jpg",
+                           ]
+    for video in non_video_filenames:
+        assert not target.is_temporary_file(video)
+
+
 class StubTrack:
     def __init__(self, width, height):
         self.width = width
