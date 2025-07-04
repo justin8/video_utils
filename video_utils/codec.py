@@ -48,5 +48,5 @@ class Codec:
             return self._ffmpeg_name
         try:
             return self._data["ffmpeg_names"][encoder]
-        except:
+        except: # noqa
             return None

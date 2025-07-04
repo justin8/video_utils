@@ -100,7 +100,7 @@ def test_refresh(mock_needs_refresh, mock_get_size, mock_validator, mock_media_i
 
     assert v.codec == expected_codec
     assert v.quality == "1080p"
-    assert v.size == 12345
+    assert v.size_b == 12345
 
 
 @patch("video_utils.video.MediaInfo.parse")
@@ -122,21 +122,21 @@ def test_needs_refresh_no_size(mock_stat):
 @patch("video_utils.video.Video._get_size", autospec=True, return_value=12345)
 def test_needs_refresh_size_different(mock_stat):
     mock_stat.return_value = stat_return()
-    v = Video("foo.mkv", "/not-a-real-path/bar", size=1)
+    v = Video("foo.mkv", "/not-a-real-path/bar", size_b=1)
     assert v._needs_refresh() is True
 
 
 @patch("video_utils.video.Video._get_size", autospec=True, return_value=12345)
 def test_needs_refresh_false(mock_stat):
     mock_stat.return_value = 12345
-    v = Video("foo.mkv", "/not-a-real-path/bar", size=12345)
+    v = Video("foo.mkv", "/not-a-real-path/bar", size_b=12345)
     assert v._needs_refresh() is False
 
 
 @patch("os.stat", autospec=True)
 def test_get_size(mock_stat):
     mock_stat.return_value = stat_return()
-    v = Video("foo.mkv", "/not-a-real-path/bar", size=555)
+    v = Video("foo.mkv", "/not-a-real-path/bar", size_b=555)
     assert v._get_size() == 12345
 
 

@@ -1,13 +1,14 @@
 [tool.poetry]
 name = "video_utils"
-version = "2.3.2"
+version = "2.3.3"
 description = "This library is used for lots of shared functionality around parsing TV shows and movies"
 authors = ["Justin Dray <justin@dray.be>"]
 license = "MIT"
 readme = "README.md"
 classifiers = [
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: 3 :: Only"
 ]
 
@@ -19,7 +20,7 @@ ffmpy = "^0.3.0"
 rich = "^13.3.5"
 iso639 = "^0.1.4"
 
-[tool.poetry.dev-dependencies]
+[poetry.group.dev.dependencies]
 coverage = "^7.2.5"
 mock = "^5.0.2"
 pytest = "^7.3.1"

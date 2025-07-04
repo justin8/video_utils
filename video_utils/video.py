@@ -19,7 +19,7 @@ class Video:
         dir_path: str,
         codec: Optional[Codec] = None,
         quality: Optional[str] = None,
-        size: Optional[int] = None,
+        size_b: Optional[int] = None,
         video_track: Optional[object] = None,
         audio_tracks: Optional[List[object]] = None,
         text_tracks: Optional[List[object]] = None,
@@ -28,7 +28,7 @@ class Video:
         self.dir_path = dir_path
         self.codec = codec
         self.quality = quality
-        self.size = size
+        self.size_b = size_b
         self.video_track = video_track
         self.audio_tracks = audio_tracks
         self.text_tracks = text_tracks
@@ -92,7 +92,7 @@ class Video:
         self._quality = value
 
     def _needs_refresh(self) -> bool:
-        if self.size != self._get_size():
+        if self.size_b != self._get_size():
             return True
         log.debug(f"Skipping refresh on '{self.full_path}'")
         return False
@@ -106,7 +106,7 @@ class Video:
         """
         if self._needs_refresh():
             log.debug(f"Refreshing data for video: {self.full_path}")
-            self.size = self._get_size()
+            self.size_b = self._get_size()
             metadata = MediaInfo.parse(self.full_path)
             self.audio_tracks = metadata.audio_tracks  # type: ignore
             self.text_tracks = metadata.text_tracks  # type: ignore
