@@ -81,7 +81,9 @@ def metadata_return():
 
 
 def stat_return():
-    def mock_st_size(): return None
+    def mock_st_size():
+        return None
+
     setattr(mock_st_size, "st_size", 12345)
     return mock_st_size
 

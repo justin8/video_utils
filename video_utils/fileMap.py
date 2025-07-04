@@ -15,7 +15,13 @@ log = logging.getLogger(__name__)
 
 
 class FileMap:
-    def __init__(self, directory: str, update: bool = True, use_cache: bool = True, progress_bar: bool = True):
+    def __init__(
+        self,
+        directory: str,
+        update: bool = True,
+        use_cache: bool = True,
+        progress_bar: bool = True,
+    ):
         """
         update and use_cache values are only honoured on object initialization
         """
@@ -90,7 +96,8 @@ class FileMap:
         video = Video(name=video_name, dir_path=dir_path)
         if video in self.contents[dir_path]:
             log.debug(
-                f"Video ({video.full_path} already in cache. Checking for updates and replacing...)")
+                f"Video ({video.full_path} already in cache. Checking for updates and replacing...)"
+            )
             video = next(i for i in self.contents[dir_path] if i == video)
             self.contents[dir_path].remove(video)
         video.refresh()
@@ -102,8 +109,9 @@ class FileMap:
     def _file_tree(self):
         if path.isfile(self.directory):
             log.debug("Provided directory is a file, not a directory")
-            file_tree = [(path.dirname(self.directory), [],
-                          [path.basename(self.directory)])]
+            file_tree = [
+                (path.dirname(self.directory), [], [path.basename(self.directory)])
+            ]
         else:
             file_tree = os.walk(self.directory, followlinks=True)
         return file_tree
@@ -140,21 +148,22 @@ class _FileMapStorage:
             if path.exists(self.storage_path):
                 log.debug("Loading from cache...")
                 try:
-                    with open(self.storage_path, 'rb') as f:
+                    with open(self.storage_path, "rb") as f:
                         data = pickle.load(f)
                 except EOFError:
                     log.error(
-                        f"Failed to load cache! Likely a corrupt cache file ({self.storage_path}). Ignoring cache...")
+                        f"Failed to load cache! Likely a corrupt cache file ({self.storage_path}). Ignoring cache..."
+                    )
         return data
 
     def save(self, data: Dict[str, List[Video]]) -> None:
         log.debug("Saving out filemap...")
-        with open(self.storage_path, 'wb') as f:
+        with open(self.storage_path, "wb") as f:
             pickle.dump(data, f)
 
     @property
     def storage_path(self) -> str:
         storage_path = path.join(path.expanduser("~"), ".local", "share", "video_utils")
         os.makedirs(storage_path, exist_ok=True)
-        name = hashlib.md5(bytes(self.directory, 'ascii')).hexdigest()
+        name = hashlib.md5(bytes(self.directory, "ascii")).hexdigest()
         return path.join(storage_path, name)

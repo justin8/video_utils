@@ -9,25 +9,35 @@ from video_utils import fileMap
 
 @pytest.fixture
 def os_walk():
-    return [('/tmp', ['foo', 'bar'], ['metadata.pickle']),
-            ('/tmp/foo',
-             [],
-             ['not-a-video.txt',
-                 'test episode - 02x03 - this is 720p.mkv',
-                 'test episode - 02x02 - another in 1080p.mkv',
-                 'test episode - 01x02 - another in 1080p.mkv',
-                 'an-image.jpg',
-                 'test episode - 01x03 - another in 1080p.mkv',
-                 'test episode - 01x01 - another in 1080p.mkv',
-                 'test episode - 02x01 - this is 1080p.avi']),
-            ('/tmp/bar',
-             [],
-             ['test episode - 02x03 - this is 720p.mkv',
-                 'test episode - 02x02 - another in 1080p.mkv',
-                 'test episode - 02x01 - this is 1080p.mkv',
-                 'test episode - 01x02 - another in 1080p.mkv',
-                 'test episode - 01x03 - another in 1080p.mkv',
-                 'test episode - 01x01 - another in 1080p.mkv'])]
+    return [
+        ("/tmp", ["foo", "bar"], ["metadata.pickle"]),
+        (
+            "/tmp/foo",
+            [],
+            [
+                "not-a-video.txt",
+                "test episode - 02x03 - this is 720p.mkv",
+                "test episode - 02x02 - another in 1080p.mkv",
+                "test episode - 01x02 - another in 1080p.mkv",
+                "an-image.jpg",
+                "test episode - 01x03 - another in 1080p.mkv",
+                "test episode - 01x01 - another in 1080p.mkv",
+                "test episode - 02x01 - this is 1080p.avi",
+            ],
+        ),
+        (
+            "/tmp/bar",
+            [],
+            [
+                "test episode - 02x03 - this is 720p.mkv",
+                "test episode - 02x02 - another in 1080p.mkv",
+                "test episode - 02x01 - this is 1080p.mkv",
+                "test episode - 01x02 - another in 1080p.mkv",
+                "test episode - 01x03 - another in 1080p.mkv",
+                "test episode - 01x01 - another in 1080p.mkv",
+            ],
+        ),
+    ]
 
 
 @pytest.fixture
@@ -93,7 +103,9 @@ def test_load_skips_update(mock_update_content, mock_storage, target):
 @patch.object(fileMap.FileMap, "_update_video")
 @patch.object(fileMap.FileMap, "_file_tree")
 @patch("video_utils.validators.Filter")
-def test_update_content_prunes_on_cache_use(mock_filter, mock_file_tree, mock_update_video, mock_prune, target):
+def test_update_content_prunes_on_cache_use(
+    mock_filter, mock_file_tree, mock_update_video, mock_prune, target
+):
     target._update_content()
     assert mock_prune.called
 
@@ -102,7 +114,9 @@ def test_update_content_prunes_on_cache_use(mock_filter, mock_file_tree, mock_up
 @patch.object(fileMap.FileMap, "_update_video")
 @patch.object(fileMap.FileMap, "_file_tree")
 @patch("video_utils.validators.Filter")
-def test_update_content_no_cache_fork(mock_filter, mock_file_tree, mock_update_video, mock_prune, target):
+def test_update_content_no_cache_fork(
+    mock_filter, mock_file_tree, mock_update_video, mock_prune, target
+):
     target.use_cache = False
     target._update_content()
     assert not mock_prune.called
@@ -116,18 +130,17 @@ def test_update_content(mock_filter, mock_update_video, mock_prune, target, os_w
     target._update_content()
 
     files = [
-        'test episode - 02x03 - this is 720p.mkv',
-        'test episode - 02x02 - another in 1080p.mkv',
-        'test episode - 01x02 - another in 1080p.mkv',
-        'test episode - 01x03 - another in 1080p.mkv',
-        'test episode - 01x01 - another in 1080p.mkv',
-        'test episode - 02x01 - this is 1080p.avi',
-        'test episode - 02x03 - this is 720p.mkv',
+        "test episode - 02x03 - this is 720p.mkv",
+        "test episode - 02x02 - another in 1080p.mkv",
+        "test episode - 01x02 - another in 1080p.mkv",
+        "test episode - 01x03 - another in 1080p.mkv",
+        "test episode - 01x01 - another in 1080p.mkv",
+        "test episode - 02x01 - this is 1080p.avi",
+        "test episode - 02x03 - this is 720p.mkv",
     ]
 
     for f in files:
-        mock_update_video.assert_any_call(
-            "/tmp/foo", f)
+        mock_update_video.assert_any_call("/tmp/foo", f)
 
 
 @patch.object(fileMap, "Video")
@@ -168,10 +181,11 @@ def test_prune_missing_files_no_directory(mock_exists, target, mock_contents):
     mock_exists.side_effect = isexists_return
     target._prune_missing_files()
     assert "/home/justin/git/video_utils/tests/testData/foo" in target.contents.keys()
-    assert "/home/justin/git/video_utils/tests/testData/bar" not in target.contents.keys()
+    assert (
+        "/home/justin/git/video_utils/tests/testData/bar" not in target.contents.keys()
+    )
     assert len(target.contents.keys()) == 1
-    assert len(
-        target.contents["/home/justin/git/video_utils/tests/testData/foo"]) == 18
+    assert len(target.contents["/home/justin/git/video_utils/tests/testData/foo"]) == 18
 
 
 @patch("os.path.exists")
@@ -189,8 +203,9 @@ def test_prune_missing_files_no_file(mock_exists, target, mock_contents):
     assert "/home/justin/git/video_utils/tests/testData/foo" in target.contents.keys()
     assert "/home/justin/git/video_utils/tests/testData/bar" in target.contents.keys()
     assert len(target.contents.keys()) == 2
-    assert missing_file not in target.contents["/home/justin/git/video_utils/tests/testData/bar"]
-    assert len(
-        target.contents["/home/justin/git/video_utils/tests/testData/foo"]) == 18
-    assert len(
-        target.contents["/home/justin/git/video_utils/tests/testData/bar"]) == 15
+    assert (
+        missing_file
+        not in target.contents["/home/justin/git/video_utils/tests/testData/bar"]
+    )
+    assert len(target.contents["/home/justin/git/video_utils/tests/testData/foo"]) == 18
+    assert len(target.contents["/home/justin/git/video_utils/tests/testData/bar"]) == 15

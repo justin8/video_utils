@@ -1,14 +1,24 @@
 from os.path import basename
 
-VALID_EXTENSIONS = ("avi", "divx", "mkv", "mp4", "mpg",
-                    "mpeg", "mov", "m4v", "flv", "ts", "wmv")
+VALID_EXTENSIONS = (
+    "avi",
+    "divx",
+    "mkv",
+    "mp4",
+    "mpg",
+    "mpeg",
+    "mov",
+    "m4v",
+    "flv",
+    "ts",
+    "wmv",
+)
 
 # This can't be an enum because you can't have numbers at the start of the enums
 VALID_QUALITIES = ("2160p", "1080p", "720p", "SD", "Unknown")
 
 
 class Validator:
-
     def is_video(self, file_path):
         return file_path.lower().endswith(VALID_EXTENSIONS)
 
@@ -32,7 +42,9 @@ class Validator:
             raise AttributeError(f"Invalid quality: {quality}")
 
     def track_resolution_similar_to(self, track, width, height):
-        return self._similar_to(track.width, width) or self._similar_to(track.height, height)
+        return self._similar_to(track.width, width) or self._similar_to(
+            track.height, height
+        )
 
     def _similar_to(self, value, target):
         value = float(value)
@@ -45,7 +57,9 @@ class Filter:
         validator = Validator()
         videos = []
         for filename in file_list:
-            if validator.is_video(filename) and not validator.is_temporary_file(filename):
+            if validator.is_video(filename) and not validator.is_temporary_file(
+                filename
+            ):
                 videos.append(filename)
         videos.sort()
         return videos

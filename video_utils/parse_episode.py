@@ -8,7 +8,9 @@ log = logging.getLogger(__name__)
 
 def _split_data(filename: str) -> Tuple[str, str, str, str]:
     results = re.findall(
-        r"(.*?)\ ?(?:\-\ ?)?\[?(?:[Ss](?=\d+[eE]\d+))?(\d+)[XxeE](\d+)\]?(?:\ ?\-)?\ ?(.*)", filename)
+        r"(.*?)\ ?(?:\-\ ?)?\[?(?:[Ss](?=\d+[eE]\d+))?(\d+)[XxeE](\d+)\]?(?:\ ?\-)?\ ?(.*)",
+        filename,
+    )
     if results:
         return results[0]
     raise ValueError

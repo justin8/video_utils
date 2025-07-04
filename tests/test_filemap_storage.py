@@ -1,5 +1,5 @@
 import pytest
-from mock import patch, mock_open
+from mock import mock_open, patch
 
 from video_utils import fileMap
 
@@ -27,9 +27,14 @@ def test_storage_path(mock_md5, mock_makedirs, mock_expanduser, target):
     mock_makedirs.assert_called_with(expected_storage_path, exist_ok=True)
 
 
+@patch("os.path.expanduser", autospec=True)
+@patch("os.makedirs", autospec=True)
 @patch("pickle.load", autospec=True)
 @patch("os.path.exists", autospec=True, return_value=True)
-def test_storage_load_cache(mock_exists, mock_load, target):
+def test_storage_load_cache(
+    mock_exists, mock_load, mock_makedirs, mock_expanduser, target
+):
+    mock_expanduser.return_value = "/home/some-user"
     m = mock_open()
     mock_load.return_value = {"asdfg": 1234}
     with patch("builtins.open", m):

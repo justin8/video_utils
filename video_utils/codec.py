@@ -5,8 +5,22 @@ from typing import Optional
 # Key is the codec format returned by MediaInfo
 CODEC_DATA = {
     "AV1": {"ffmpeg_names": {"software": "libaom-av1"}, "pretty_name": "av1"},
-    "HEVC": {"ffmpeg_names": {"software": "libx265", "nvidia": "hevc_nvenc", "intel": "hevc_qsv"}, "pretty_name": "x265"},
-    "AVC": {"ffmpeg_names": {"software": "h264", "nvidia": "h264_nvenc", "intel": "h264_qsv"}, "pretty_name": "x264"},
+    "HEVC": {
+        "ffmpeg_names": {
+            "software": "libx265",
+            "nvidia": "hevc_nvenc",
+            "intel": "hevc_qsv",
+        },
+        "pretty_name": "x265",
+    },
+    "AVC": {
+        "ffmpeg_names": {
+            "software": "h264",
+            "nvidia": "h264_nvenc",
+            "intel": "h264_qsv",
+        },
+        "pretty_name": "x264",
+    },
     "AAC": {"ffmpeg_names": {"software": "aac"}, "pretty_name": "aac"},
 }
 
@@ -16,7 +30,7 @@ class Codec:
         self,
         format_name: str,
         ffmpeg_name: Optional[str] = None,
-        pretty_name: Optional[str] = None
+        pretty_name: Optional[str] = None,
     ) -> None:
         self.format_name = format_name
         self._ffmpeg_name = ffmpeg_name
@@ -39,7 +53,9 @@ class Codec:
     def _autodetect(self) -> None:
         try:
             self._data = CODEC_DATA[self.format_name]
-            self.pretty_name = self.pretty_name if self.pretty_name else self._data["pretty_name"]
+            self.pretty_name = (
+                self.pretty_name if self.pretty_name else self._data["pretty_name"]
+            )
         except KeyError:
             pass  # No match found
 
@@ -48,5 +64,5 @@ class Codec:
             return self._ffmpeg_name
         try:
             return self._data["ffmpeg_names"][encoder]
-        except: # noqa
+        except:  # noqa
             return None
