@@ -60,18 +60,6 @@ jobs:
         run: |
           git push --tags || :
 
-  github_actions_test:
-    needs: [tag-releases]
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Dump context
-        run: echo "${{ toJSON(github) }}"
-      - name: Dump needs
-        run: echo "${{ toJSON(needs) }}"
-      - name: Files
-        run: find .
-
   publish:
     needs: [build-and-test, tag-releases]
     runs-on: ubuntu-latest
@@ -94,7 +82,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: dist
-          path: .
 
       - name: Files
         run: find .

@@ -1,6 +1,6 @@
 [project]
 name = "video_utils"
-version = "2.4.1"
+version = "2.4.2"
 description = "This library is used for lots of shared functionality around parsing TV shows and movies"
 authors = [{ name = "Justin Dray", email = "justin@dray.be" }]
 requires-python = ">=3.12.0,<4"
