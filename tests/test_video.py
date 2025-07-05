@@ -13,6 +13,16 @@ def test_minimal():
     assert v.dir_path == "/not-a-real-path/bar"
 
 
+def test_duration_init():
+    v = Video("foo.mkv", "/not-a-real-path/bar", duration=120000)
+    assert v.duration == 120000
+
+
+def test_duration_init_none():
+    v = Video("foo.mkv", "/not-a-real-path/bar")
+    assert v.duration is None
+
+
 def test_full_path():
     v = Video("foo.mkv", "/not-a-real-path/bar")
     assert v.full_path == "/not-a-real-path/bar/foo.mkv"
@@ -103,6 +113,7 @@ def test_refresh(mock_needs_refresh, mock_get_size, mock_validator, mock_media_i
     assert v.codec == expected_codec
     assert v.quality == "1080p"
     assert v.size_b == 12345
+    assert v.duration == 1436031.0
 
 
 @patch("video_utils.video.MediaInfo.parse")

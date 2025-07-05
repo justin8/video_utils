@@ -20,6 +20,7 @@ class Video:
         codec: Optional[Codec] = None,
         quality: Optional[str] = None,
         size_b: Optional[int] = None,
+        duration: Optional[int] = None,
         video_track: Optional[object] = None,
         audio_tracks: Optional[List[object]] = None,
         text_tracks: Optional[List[object]] = None,
@@ -29,6 +30,7 @@ class Video:
         self.codec = codec
         self.quality = quality
         self.size_b = size_b
+        self.duration = duration
         self.video_track = video_track
         self.audio_tracks = audio_tracks
         self.text_tracks = text_tracks
@@ -117,6 +119,7 @@ class Video:
 
             self.quality = Validator().quality_similar_to(self.video_track)
             self.codec = Codec(format_name=self.video_track.format)
+            self.duration = float(self.video_track.duration) if self.video_track.duration else None
             if self.quality == "Unknown":
                 error_message = f"Failed to parse track metadata from {self.full_path}"
                 log.error(error_message)

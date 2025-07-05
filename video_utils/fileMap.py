@@ -85,7 +85,7 @@ class FileMap:
             log.debug("Total videos in %s: %s" % (dir_path, len(video_files)))
 
             if self._progress_bar:
-                video_files = track(video_files)
+                video_files = track(video_files, f"Processing {dir_path}...")
 
             for video_file in video_files:
                 self._update_video(dir_path, video_file)
