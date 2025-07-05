@@ -1,8 +1,9 @@
 import os
+import pickle
 from os import path
+
 import pytest
 from mock import patch
-import pickle
 
 from video_utils import fileMap
 

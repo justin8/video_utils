@@ -1,10 +1,11 @@
-import pytest
 import os
-from os import path
-from mock import patch
 import pickle
+from os import path
 
-from video_utils import Video, Codec
+import pytest
+from mock import patch
+
+from video_utils import Codec, Video
 
 
 def test_minimal():
@@ -100,7 +101,7 @@ def stat_return():
 
 @patch("video_utils.video.MediaInfo", autospec=True)
 @patch("video_utils.validators.Validator", autospec=True)
-@patch("video_utils.video.Video._get_size", autospec=True, return_value=12345)
+@patch("video_utils.video.Video.get_current_size", autospec=True, return_value=12345)
 @patch("video_utils.video.Video._needs_refresh", autospec=True, return_value=True)
 def test_refresh(mock_needs_refresh, mock_get_size, mock_validator, mock_media_info):
     expected_codec = Codec("HEVC")
@@ -125,21 +126,21 @@ def test_refresh_not_required(mock_needs_refresh, mock_validator, mock_parse):
     assert mock_parse.called is False
 
 
-@patch("video_utils.video.Video._get_size", autospec=True, return_value=12345)
+@patch("video_utils.video.Video.get_current_size", autospec=True, return_value=12345)
 def test_needs_refresh_no_size(mock_stat):
     mock_stat.return_value = stat_return()
     v = Video("foo.mkv", "/not-a-real-path/bar")
     assert v._needs_refresh() is True
 
 
-@patch("video_utils.video.Video._get_size", autospec=True, return_value=12345)
+@patch("video_utils.video.Video.get_current_size", autospec=True, return_value=12345)
 def test_needs_refresh_size_different(mock_stat):
     mock_stat.return_value = stat_return()
     v = Video("foo.mkv", "/not-a-real-path/bar", size_b=1)
     assert v._needs_refresh() is True
 
 
-@patch("video_utils.video.Video._get_size", autospec=True, return_value=12345)
+@patch("video_utils.video.Video.get_current_size", autospec=True, return_value=12345)
 def test_needs_refresh_false(mock_stat):
     mock_stat.return_value = 12345
     v = Video("foo.mkv", "/not-a-real-path/bar", size_b=12345)
@@ -147,10 +148,10 @@ def test_needs_refresh_false(mock_stat):
 
 
 @patch("os.stat", autospec=True)
-def test_get_size(mock_stat):
+def test_get_current_size(mock_stat):
     mock_stat.return_value = stat_return()
     v = Video("foo.mkv", "/not-a-real-path/bar", size_b=555)
-    assert v._get_size() == 12345
+    assert v.get_current_size() == 12345
 
 
 @patch("video_utils.video.MediaInfo", autospec=True)

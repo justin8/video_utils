@@ -3,11 +3,11 @@ import os
 from os import path
 from typing import List, Optional
 
-from pymediainfo import MediaInfo
 from iso639 import to_iso639_2
+from pymediainfo import MediaInfo
 
-from .validators import Validator
 from .codec import Codec
+from .validators import Validator
 
 log = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ class Video:
         codec: Optional[Codec] = None,
         quality: Optional[str] = None,
         size_b: Optional[int] = None,
-        duration: Optional[int] = None,
+        duration: Optional[float] = None,
         video_track: Optional[object] = None,
         audio_tracks: Optional[List[object]] = None,
         text_tracks: Optional[List[object]] = None,
@@ -94,12 +94,12 @@ class Video:
         self._quality = value
 
     def _needs_refresh(self) -> bool:
-        if self.size_b != self._get_size():
+        if self.size_b != self.get_current_size():
             return True
         log.debug(f"Skipping refresh on '{self.full_path}'")
         return False
 
-    def _get_size(self) -> int:
+    def get_current_size(self) -> int:
         return os.stat(self.full_path).st_size
 
     def refresh(self) -> None:
@@ -108,7 +108,7 @@ class Video:
         """
         if self._needs_refresh():
             log.debug(f"Refreshing data for video: {self.full_path}")
-            self.size_b = self._get_size()
+            self.size_b = self.get_current_size()
             metadata = MediaInfo.parse(self.full_path)
             self.audio_tracks = metadata.audio_tracks  # type: ignore
             self.text_tracks = metadata.text_tracks  # type: ignore
@@ -119,7 +119,9 @@ class Video:
 
             self.quality = Validator().quality_similar_to(self.video_track)
             self.codec = Codec(format_name=self.video_track.format)
-            self.duration = float(self.video_track.duration) if self.video_track.duration else None
+            self.duration = (
+                float(self.video_track.duration) if self.video_track.duration else None
+            )
             if self.quality == "Unknown":
                 error_message = f"Failed to parse track metadata from {self.full_path}"
                 log.error(error_message)
