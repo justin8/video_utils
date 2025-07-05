@@ -1,6 +1,6 @@
 [project]
 name = "video_utils"
-version = "2.4.2"
+version = "2.4.3"
 description = "This library is used for lots of shared functionality around parsing TV shows and movies"
 authors = [{ name = "Justin Dray", email = "justin@dray.be" }]
 requires-python = ">=3.12.0,<4"
@@ -24,6 +24,7 @@ dev = [
     "flake8>=6.0.0,<7",
     "pytest-cov>=4.0.0,<5",
     "ruff>=0.12.2",
+    "ipython>=9.4.0",
 ]
 
 [tool.pytest.ini_options]
