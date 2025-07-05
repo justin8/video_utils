@@ -1,5 +1,6 @@
+from unittest.mock import mock_open, patch
+
 import pytest
-from mock import mock_open, patch
 
 from video_utils import fileMap
 
@@ -19,7 +20,7 @@ def test_storage(target):
 def test_storage_path(mock_md5, mock_makedirs, mock_expanduser, target):
     mock_expanduser.return_value = "/home/some-user"
     mock_md5().hexdigest.return_value = "12345"
-    expected_storage_path = "/home/some-user/.local/share/video_utils"
+    expected_storage_path = "/home/some-user/.cache/video_utils"
     result = target.storage_path
     assert result == expected_storage_path + "/12345"
     mock_md5.assert_called_with(b"/foo/bar")

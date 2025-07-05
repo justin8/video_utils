@@ -11,7 +11,7 @@ CODEC_DATA = {
             "nvidia": "hevc_nvenc",
             "intel": "hevc_qsv",
         },
-        "pretty_name": "x265",
+        "pretty_name": "HEVC",
     },
     "AVC": {
         "ffmpeg_names": {
@@ -19,7 +19,7 @@ CODEC_DATA = {
             "nvidia": "h264_nvenc",
             "intel": "h264_qsv",
         },
-        "pretty_name": "x264",
+        "pretty_name": "h264",
     },
     "AAC": {"ffmpeg_names": {"software": "aac"}, "pretty_name": "aac"},
 }

@@ -1,11 +1,12 @@
-from copy import deepcopy
+import hashlib
 import logging
 import os
-from os import path
-import hashlib
 import pickle
-from rich.progress import track
+from copy import deepcopy
+from os import path
 from typing import Dict, List
+
+from rich.progress import track
 
 from .colour import colour
 from .validators import Filter
@@ -163,7 +164,7 @@ class _FileMapStorage:
 
     @property
     def storage_path(self) -> str:
-        storage_path = path.join(path.expanduser("~"), ".local", "share", "video_utils")
+        storage_path = path.join(path.expanduser("~"), ".cache", "video_utils")
         os.makedirs(storage_path, exist_ok=True)
         name = hashlib.md5(bytes(self.directory, "ascii")).hexdigest()
         return path.join(storage_path, name)
