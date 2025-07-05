@@ -280,7 +280,7 @@ dev = [
 requires-dist = [
     { name = "colorama", specifier = ">=0.4.6,<0.5" },
     { name = "ffmpy", specifier = ">=0.6.0,<0.7" },
-    { name = "iso639", specifier = ">=0.1.4,<0.2" },
+    { name = "iso639", specifier = ">=0.1.4" },
     { name = "pymediainfo", specifier = ">=7.0.0,<8" },
     { name = "rich", specifier = ">=13.0.0,<15" },
 ]
