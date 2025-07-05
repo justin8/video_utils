@@ -1,6 +1,6 @@
 [project]
 name = "video_utils"
-version = "2.4.7"
+version = "2.4.8"
 description = "This library provides utilities for dealing folders full of video files, including parsing out all metadata and intelligent caching."
 authors = [{ name = "Justin Dray", email = "justin@dray.be" }]
 requires-python = ">=3.12.0,<4"
