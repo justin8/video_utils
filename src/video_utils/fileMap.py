@@ -86,10 +86,25 @@ class FileMap:
             log.debug(
                 f"Video ({video.full_path} already in cache. Checking for updates and replacing...)"
             )
-            video = next(i for i in self.contents[dir_path] if i == video)
-            self.contents[dir_path].remove(video)
-        video.refresh()
-        self.contents[dir_path].append(video)
+            cached_video = next(i for i in self.contents[dir_path] if i == video)
+
+            # Check if cached video has outdated schema
+            schema_version = getattr(cached_video, "schema_version", 1)
+
+            if schema_version < Video.SCHEMA_VERSION:
+                log.debug(
+                    f"Cached video has outdated schema, forcing refresh: {video.full_path}"
+                )
+                self.contents[dir_path].remove(cached_video)
+                video.refresh()
+                self.contents[dir_path].append(video)
+            else:
+                # Use cached video and check if it needs refresh
+                video = cached_video
+                video.refresh()
+        else:
+            video.refresh()
+            self.contents[dir_path].append(video)
 
     def _video_needs_refreshing(self, video: Video) -> None:
         pass

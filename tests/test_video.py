@@ -5,7 +5,7 @@ from os import path
 import pytest
 from mock import patch
 
-from video_utils import Codec, Video
+from video_utils import Codec, Video, Resolution
 
 
 def test_minimal():
@@ -115,6 +115,7 @@ def test_refresh(mock_needs_refresh, mock_get_size, mock_validator, mock_media_i
     assert v.quality == "1080p"
     assert v.size_b == 12345
     assert v.duration == 1436031.0
+    assert v.resolution == Resolution.P1080
 
 
 @patch("video_utils.video.MediaInfo.parse")
@@ -194,3 +195,54 @@ def test_audio_languages(mock_validator, mock_stat, mock_media_info):
     v = Video("foo.mkv", "/not-a-real-path/bar")
     v.refresh()
     assert v.audio_languages == ["jpn"]
+
+
+def test_resolution_init():
+    v = Video("foo.mkv", "/not-a-real-path/bar", resolution=Resolution.P720)
+    assert v.resolution == Resolution.P720
+
+
+def test_resolution_init_none():
+    v = Video("foo.mkv", "/not-a-real-path/bar")
+    assert v.resolution is None
+
+
+def test_determine_resolution_1080p():
+    v = Video("foo.mkv", "/not-a-real-path/bar")
+    assert v._determine_resolution(1920) == Resolution.P1080
+    assert v._determine_resolution(1900) == Resolution.P1080  # Within 10%
+    assert v._determine_resolution(2100) == Resolution.P1080  # Within 10%
+
+
+def test_determine_resolution_720p():
+    v = Video("foo.mkv", "/not-a-real-path/bar")
+    assert v._determine_resolution(1280) == Resolution.P720
+    assert v._determine_resolution(1200) == Resolution.P720  # Within 10%
+
+
+def test_determine_resolution_576p():
+    v = Video("foo.mkv", "/not-a-real-path/bar")
+    assert v._determine_resolution(1024) == Resolution.P576
+    assert v._determine_resolution(950) == Resolution.P576  # Within 10%
+
+
+def test_determine_resolution_2160p():
+    v = Video("foo.mkv", "/not-a-real-path/bar")
+    assert v._determine_resolution(3840) == Resolution.P2160
+    assert v._determine_resolution(3500) == Resolution.P2160  # Within 10%
+
+
+def test_determine_resolution_other():
+    v = Video("foo.mkv", "/not-a-real-path/bar")
+    assert v._determine_resolution(800) == Resolution.OTHER
+    assert v._determine_resolution(5000) == Resolution.OTHER
+
+
+def test_schema_version_init():
+    v = Video("foo.mkv", "/not-a-real-path/bar")
+    assert v.schema_version == Video.SCHEMA_VERSION
+
+
+def test_schema_version_explicit():
+    v = Video("foo.mkv", "/not-a-real-path/bar", schema_version=1)
+    assert v.schema_version == 1

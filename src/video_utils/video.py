@@ -1,5 +1,6 @@
 import logging
 import os
+from enum import Enum
 from os import path
 from typing import List, Optional
 
@@ -12,7 +13,18 @@ from .validators import Validator
 log = logging.getLogger(__name__)
 
 
+class Resolution(Enum):
+    P576 = "576p"
+    P720 = "720p"
+    P1080 = "1080p"
+    P2160 = "2160p"
+    OTHER = "other"
+
+
 class Video:
+    # Increment this when adding new fields or changing the structure
+    SCHEMA_VERSION = 2
+
     def __init__(
         self,
         name: str,
@@ -24,6 +36,8 @@ class Video:
         video_track: Optional[object] = None,
         audio_tracks: Optional[List[object]] = None,
         text_tracks: Optional[List[object]] = None,
+        resolution: Optional[Resolution] = None,
+        schema_version: Optional[int] = None,
     ):
         self.name = name
         self.dir_path = dir_path
@@ -34,6 +48,8 @@ class Video:
         self.video_track = video_track
         self.audio_tracks = audio_tracks
         self.text_tracks = text_tracks
+        self.resolution = resolution
+        self.schema_version = schema_version or self.SCHEMA_VERSION
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Video):
@@ -43,7 +59,7 @@ class Video:
         return self.full_path == other.full_path
 
     def __repr__(self) -> str:
-        return f"<Video name={self.name} codec={self.codec} quality={self.quality}>"
+        return f"<Video name={self.name} codec={self.codec} quality={self.quality} resolution={self.resolution}>"
 
     def __str__(self) -> str:
         return self.__repr__()
@@ -93,6 +109,21 @@ class Video:
         Validator().quality(value)
         self._quality = value
 
+    def _determine_resolution(self, width: int) -> Resolution:
+        """Determine resolution based on video width with 10% tolerance"""
+        resolutions = {
+            1024: Resolution.P576,  # 576p (1024x576)
+            1280: Resolution.P720,  # 720p (1280x720)
+            1920: Resolution.P1080,  # 1080p (1920x1080)
+            3840: Resolution.P2160,  # 2160p (3840x2160)
+        }
+
+        for target_width, resolution in resolutions.items():
+            if abs(width - target_width) / target_width <= 0.1:
+                return resolution
+
+        return Resolution.OTHER
+
     def _needs_refresh(self) -> bool:
         if self.size_b != self.get_current_size():
             return True
@@ -122,6 +153,12 @@ class Video:
             self.duration = (
                 float(self.video_track.duration) if self.video_track.duration else None
             )
+            self.resolution = (
+                self._determine_resolution(int(self.video_track.width))
+                if self.video_track.width
+                else Resolution.OTHER
+            )
+            self.schema_version = self.SCHEMA_VERSION
             if self.quality == "Unknown":
                 error_message = f"Failed to parse track metadata from {self.full_path}"
                 log.error(error_message)
