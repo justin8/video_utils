@@ -60,20 +60,18 @@ def test_init(target):
 
 
 def test_init_failure():
-    with pytest.raises(AttributeError):
-        fileMap.FileMap("/foo", False, False)
+    # This test is no longer relevant since use_cache parameter was removed
+    pass
 
 
 def test_init_validator(target):
-    target.use_cache = False
-    with pytest.raises(AttributeError):
-        target.update = False
+    # This test is no longer relevant since use_cache was removed
+    pass
 
 
 def test_init_validator_reverse(target):
-    target.use_cache = False
-    with pytest.raises(AttributeError):
-        target.update = False
+    # This test is no longer relevant since use_cache was removed
+    pass
 
 
 def test_directory_setter(target):
@@ -108,7 +106,7 @@ def test_update_content_prunes_on_cache_use(
     mock_filter, mock_file_tree, mock_update_video, mock_prune, target
 ):
     target._update_content()
-    assert mock_prune.called
+    assert not mock_prune.called  # Prune is now called in load(), not _update_content()
 
 
 @patch.object(fileMap.FileMap, "_prune_missing_files")
@@ -118,7 +116,7 @@ def test_update_content_prunes_on_cache_use(
 def test_update_content_no_cache_fork(
     mock_filter, mock_file_tree, mock_update_video, mock_prune, target
 ):
-    target.use_cache = False
+    # Prune is now called in load(), not _update_content()
     target._update_content()
     assert not mock_prune.called
 
@@ -190,7 +188,13 @@ def test_prune_missing_files_no_directory(mock_exists, target, mock_contents):
 
 
 @patch("os.path.exists")
-def test_prune_missing_files_no_file(mock_exists, target, mock_contents):
+@patch(
+    "video_utils.fileMap._FileMapStorage.storage_path",
+    new_callable=lambda: property(lambda self: "/tmp/test_cache.db"),
+)
+def test_prune_missing_files_no_file(
+    mock_storage_path, mock_exists, target, mock_contents
+):
     missing_file = "/home/justin/git/video_utils/tests/testData/bar/test episode - 01x01 - another in 1080p.mkv"
 
     def isexists_return(file_path):
@@ -210,3 +214,29 @@ def test_prune_missing_files_no_file(mock_exists, target, mock_contents):
     )
     assert len(target.contents["/home/justin/git/video_utils/tests/testData/foo"]) == 18
     assert len(target.contents["/home/justin/git/video_utils/tests/testData/bar"]) == 15
+
+
+def test_subdirectory_filtering():
+    """Test that FileMap for subdirectory only loads files from that subdirectory"""
+    current_dir = path.dirname(path.abspath(__file__))
+    test_data_dir = path.join(current_dir, "testData")
+
+    # First load the parent directory to populate cache
+    parent_filemap = fileMap.FileMap(test_data_dir, progress_bar=False)
+    parent_filemap.load()
+
+    # Now load just the foo subdirectory
+    foo_dir = path.join(test_data_dir, "foo")
+    foo_filemap = fileMap.FileMap(foo_dir, progress_bar=False)
+    foo_filemap.load()
+
+    # Should only have files from foo directory
+    assert foo_dir in foo_filemap.contents
+    bar_dir = path.join(test_data_dir, "bar")
+    assert bar_dir not in foo_filemap.contents
+
+    # Verify all files in contents are from foo directory
+    for directory, videos in foo_filemap.contents.items():
+        assert directory.startswith(foo_dir)
+        for video in videos:
+            assert video.full_path.startswith(foo_dir)
