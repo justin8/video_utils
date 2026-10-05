@@ -59,7 +59,8 @@ class Video:
         return self.full_path == other.full_path
 
     def __repr__(self) -> str:
-        return f"<Video name={self.name} codec={self.codec} quality={self.quality} resolution={self.resolution}>"
+        resolution = getattr(self, "resolution", None)
+        return f"<Video name={self.name} codec={self.codec} quality={self.quality} resolution={resolution}>"
 
     def __str__(self) -> str:
         return self.__repr__()

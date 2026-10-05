@@ -45,6 +45,16 @@ def test_codec_intel():
     assert c.pretty_name == "HEVC"
 
 
+def test_codec_amd():
+    c = Codec("HEVC")
+    assert c.format_name == "HEVC"
+    assert c.get_ffmpeg_name("amd") == "hevc_vaapi"
+    assert c.pretty_name == "HEVC"
+
+    c_avc = Codec("AVC")
+    assert c_avc.get_ffmpeg_name("amd") == "h264_vaapi"
+
+
 def test_codec_equality():
     dummy_codec = Codec("AVC", ffmpeg_name="h264", pretty_name="x264")
     different_codec = Codec("HEVC", ffmpeg_name="libx265", pretty_name="x265")
