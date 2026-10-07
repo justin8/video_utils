@@ -10,7 +10,7 @@ license = "MIT"
 dependencies = [
     "colorama>=0.4.6,<0.5",
     "pymediainfo>=7.0.0,<8",
-    "rich>=13.0.0,<15",
+    "rich>=15,<16",
     "iso639>=0.1.4",
 ]
 
